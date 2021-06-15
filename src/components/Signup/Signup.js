@@ -1,0 +1,322 @@
+import React, {useState, useEffect} from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {
+  Container,
+  Content,
+  Button,
+  Card,
+  CardItem,
+  Text,
+  Form,
+  Item,
+  Input,
+  Label,
+  Body,
+  View,
+} from 'native-base';
+import {Grid, Row, Col} from 'react-native-easy-grid';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Image,
+  Alert,
+  Keyboard,
+  ActivityIndicator,
+  ImageBackground,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
+// import { Auth, firebase } from "../../firebase/config"
+import Auth from '@react-native-firebase/auth';
+import Database from '@react-native-firebase/database';
+import {KeyboardAvoidingScrollView} from 'react-native-keyboard-avoiding-scroll-view';
+
+const Signup = ({navigation, todos}) => {
+  const initialState = {
+    firstname: '',
+    lastname: '',
+    email: '',
+    password: '',
+  };
+  const initialErrors = {
+    firstname: '',
+    lastname: '',
+    email: '',
+    password: '',
+  };
+  const [state, setState] = useState(initialState);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState(initialErrors);
+  const {firstname, lastname, email} = state;
+
+  useEffect(() => {}, []);
+
+  const onchange = (text, name) => {
+    setState({...state, [name]: text});
+    setErrors(initialErrors);
+  };
+
+  const sendToDatabase = uid => {
+    let userData = {uid, firstname, lastname, email};
+    Database()
+      .ref('users')
+      .child(uid)
+      .set(userData)
+      .then(() => console.log('user send'))
+      .catch(err => console.log('err', err));
+  };
+
+  const onsubmit = () => {
+    let {firstname, lastname, email, password} = state;
+
+    if (!firstname) {
+      setErrors({...errors, firstname: 'Required'});
+    }
+    if (!lastname) {
+      setErrors({...errors, lastname: 'Required'});
+    }
+    if (!email) {
+      setErrors({...errors, email: 'Required'});
+    }
+    if (!password) {
+      setErrors({...errors, password: 'Required'});
+    }
+    console.log(state);
+    // console.log(errors)
+
+    if (firstname && lastname && email && password) {
+      setLoading(true);
+      Auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(({user}) => {
+          console.log('User account created & signed in! with uid', user.uid);
+          setLoading(false);
+          sendToDatabase(user.uid);
+          Auth().signOut();
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            setErrors({
+              ...errors,
+              email: 'That email address is already in use!',
+            });
+          }
+          if (error.code === 'auth/invalid-email') {
+            setErrors({...errors, email: 'Email is invalid!'});
+          }
+
+          if (error.code === 'auth/weak-password') {
+            setErrors({...errors, password: 'Password is weak!'});
+          }
+          if (error.code === 'auth/network-request-failed') {
+            alert('Connection Failed Make sure you have internet connection');
+          }
+
+          console.log(error);
+          setLoading(false);
+        });
+      setErrors(initialErrors);
+    }
+    Keyboard.dismiss();
+  };
+
+  return (
+    <Container>
+      <ImageBackground
+        source={require('../../images/pexels.jpeg')}
+        style={{flex: 1}}
+        resizeMode="cover">
+        <StatusBar backgroundColor="green" />
+        <KeyboardAvoidingScrollView>
+          <View style={{marginTop: 120, marginHorizontal: 10}}>
+            <View>
+              <Card style={{borderRadius: 10, elevation: 5, opacity: 0.9}}>
+                <View style={styles.imageContent}>
+                  <Image
+                    style={styles.tinyLogo}
+                    source={require('../../images/user.png')}
+                  />
+                </View>
+                {/* <CardItem bordered style={{ flex: 1, justifyContent: "center" }}>
+                                <Text style={{ color: "#4DAD4A", fontSize: 20, fontWeight: "bold" }}>Sign Up</Text>
+                            </CardItem> */}
+                <View style={{marginHorizontal: 10, marginTop: 50}}>
+                  <Form>
+                    <View>
+                      <Item
+                        style={styles.item}
+                        rounded
+                        error={errors.firstname ? true : false}>
+                        <Label style={{fontWeight: 'bold', fontSize: 15}}>
+                          First Name
+                        </Label>
+                        <Input
+                          value={state.firstname}
+                          onChangeText={text => onchange(text, 'firstname')}
+                        />
+                      </Item>
+                      {errors.firstname ? (
+                        <Text style={styles.error}>{errors.firstname}</Text>
+                      ) : null}
+                    </View>
+                    <View>
+                      <Item
+                        style={styles.item}
+                        rounded
+                        error={errors.lastname ? true : false}>
+                        <Label style={{fontWeight: 'bold', fontSize: 15}}>
+                          Last Name
+                        </Label>
+                        <Input
+                          value={state.lastname}
+                          onChangeText={text => onchange(text, 'lastname')}
+                        />
+                      </Item>
+                      {errors.lastname ? (
+                        <Text style={styles.error}>{errors.lastname}</Text>
+                      ) : null}
+                    </View>
+                    <View>
+                      <Item
+                        style={styles.item}
+                        rounded
+                        error={errors.email ? true : false}>
+                        <Label style={{fontWeight: 'bold', fontSize: 15}}>
+                          Email
+                        </Label>
+                        <Input
+                          value={state.email}
+                          onChangeText={text => onchange(text, 'email')}
+                        />
+                      </Item>
+                      {errors.email ? (
+                        <Text style={styles.error}>{errors.email}</Text>
+                      ) : null}
+                    </View>
+                    <View>
+                      <Item
+                        style={styles.item}
+                        rounded
+                        error={errors.password ? true : false}>
+                        <Label style={{fontWeight: 'bold'}}>Password</Label>
+                        <Input
+                          secureTextEntry
+                          value={state.password}
+                          onChangeText={text => onchange(text, 'password')}
+                        />
+                      </Item>
+                      <Text
+                        style={errors.password ? styles.error : styles.info}>
+                        {errors.password
+                          ? errors.password
+                          : 'Password shoule be greater than 6'}
+                      </Text>
+                    </View>
+                  </Form>
+                </View>
+                <Content style={{marginVertical: 7}}>
+                  <Button
+                    style={{margin: 7, borderRadius: 10}}
+                    full
+                    success
+                    disabled={loading}
+                    onPress={() => onsubmit()}>
+                    <Text>
+                      Signup <Icon name="user" size={17} color="#fff" />
+                    </Text>
+                    {loading ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : null}
+                  </Button>
+                </Content>
+                <View style={styles.bottomLinks}>
+                  {/* <TouchableOpacity style={styles.bottomLink} onPress={_ => navigation.navigate("CreateAccount")}> */}
+                  <Text style={styles.bottomLinkText}>
+                    Already Have Account?
+                  </Text>
+                  {/* </TouchableOpacity> */}
+                  {/* <TouchableOpacity style={styles.bottomLink} onPress={_ => navigation.navigate("forget")}> */}
+                  <Text
+                    style={[
+                      styles.bottomLinkText,
+                      {marginRight: 10, color: 'grey'},
+                    ]}
+                    onPress={_ => navigation.navigate('login')}>
+                    Click Here
+                  </Text>
+                  {/* </TouchableOpacity> */}
+                </View>
+              </Card>
+            </View>
+          </View>
+        </KeyboardAvoidingScrollView>
+      </ImageBackground>
+    </Container>
+  );
+};
+
+export default Signup;
+
+const styles = StyleSheet.create({
+  login: {
+    display: 'flex',
+    borderWidth: 1,
+    borderColor: 'black',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageContent: {
+    // borderWidth: 2,
+    borderColor: 'green',
+    position: 'absolute',
+    bottom: '88%',
+    left: '40%',
+    // flex: 1,
+    // flexDirection: "row",
+    // justifyContent: "center",
+    // alignItems: "center",
+    // marginVertical: 10,
+  },
+  tinyLogo: {
+    width: 80,
+    height: 80,
+    marginVertical: 10,
+  },
+  item: {
+    marginVertical: 7,
+    borderWidth: 2,
+    borderColor: 'green',
+    paddingHorizontal: 10,
+  },
+  error: {
+    fontSize: 12,
+    marginBottom: 10,
+    marginLeft: 13,
+    color: 'red',
+  },
+  info: {
+    fontSize: 12,
+    marginBottom: 10,
+    marginLeft: 5,
+    color: 'grey',
+  },
+  bottomLinks: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginVertical: 15,
+  },
+  bottomLink: {
+    // borderWidth: 1,
+    // borderColor: "#4DAD4A",
+    backgroundColor: '#F2F2F2',
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  bottomLinkText: {
+    color: '#4DAD4A',
+    fontWeight: 'bold',
+  },
+});
