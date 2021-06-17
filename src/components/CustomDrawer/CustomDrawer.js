@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import MyColors from '../../colors/colors';
 import Animated from 'react-native-reanimated';
 import {
@@ -21,9 +21,29 @@ import {
   DrawerItemList,
   DrawerContentScrollView,
 } from '@react-navigation/drawer';
+import { useSelector } from "react-redux"
+import database from "@react-native-firebase/database"
+import storage from "@react-native-firebase/storage"
 
-const CustomDrawer = ({progress, ...props}) => {
+
+const CustomDrawer = ({ progress, ...props }) => {
   const uri = 'https://facebook.github.io/react-native/docs/assets/favicon.png';
+
+  const currentUID = useSelector(state => state.todo.loginUser.uid)
+
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    console.log("drawer state", currentUID)
+    database().ref(`users/${currentUID}`).on("value", snap => {
+      if (snap.exists()) {
+        console.log("user", snap.val())
+        setUser(snap.val())
+      }
+    })
+
+    return () => console.log("")
+  }, [currentUID])
 
   return (
     <Container>
@@ -33,32 +53,33 @@ const CustomDrawer = ({progress, ...props}) => {
             name="bars"
             type="FontAwesome5"
             color="red"
-            style={{fontSize: 25, color: MyColors.green}}
+            style={{ fontSize: 25, color: MyColors.green }}
             onPress={() => props.navigation.closeDrawer()}
           />
         </Right>
       </Header>
-      <ListItem thumbnail>
+      {!!Object.keys(user).length && <ListItem thumbnail>
         <Left>
-          <Thumbnail source={{uri: uri}} />
+          <Thumbnail source={{ uri: user?.photoURL ? user?.photoURL : uri }} />
         </Left>
         <Body>
-          <Text style={{}}>Muhammad Hassan</Text>
-          <Text note style={{fontWeight: '500'}}>
-            Trainee Engineer
+          <Text style={{}}>{user.firstname + " " + user.lastname}</Text>
+          <Text note style={{ fontWeight: '500', textTransform: "capitalize" }}>
+            {user.occupation}
           </Text>
         </Body>
       </ListItem>
+      }
       <Content>
         <DrawerContentScrollView>
           <DrawerItemList {...props} />
           <DrawerItem
             label="Rate Us"
-            icon={({color, size, focused}) => (
+            icon={({ color, size, focused }) => (
               <Icon
                 name="star"
                 type="FontAwesome5"
-                style={{color: color, fontSize: size}}
+                style={{ color: color, fontSize: size }}
               />
             )}
           />

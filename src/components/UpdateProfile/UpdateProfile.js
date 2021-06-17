@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   Container,
@@ -14,61 +14,146 @@ import {
   Body,
 } from 'native-base';
 import MyColors from '../../colors/colors';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ImagePickerIOS } from 'react-native';
 import MyHeader from '../Header/Header';
 import MyFooter from '../Footer/Footer';
-import {KeyboardAvoidingScrollView} from 'react-native-keyboard-avoiding-scroll-view';
+import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
+import firebase from '@react-native-firebase/app';
 import database from '@react-native-firebase/database';
-import Auth from '@react-native-firebase/auth';
-import {useSelector} from 'react-redux';
-import {launchImageLibrary} from 'react-native-image-picker';
+import auth from '@react-native-firebase/auth';
+import storage from '@react-native-firebase/storage';
+import { useSelector } from 'react-redux';
+import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 
 const UpdateProfile = () => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
+
   const initialState = {
-    name: '',
-    desc: '',
+    fname: '',
+    lname: '',
+    email: "",
+    occupation: "",
     photo: null,
   };
+  const initialError = {
+    fname: '',
+    lname: '',
+    photo: "",
+  };
   const [state, setState] = useState(initialState);
+  const [user, setUser] = useState({});
+  const [progress, setProgress] = useState(0);
+  const [errors, setError] = useState(initialError);
+
+  useEffect(() => {
+    database().ref(`users/${currentUserUID}`).on("value", data => {
+      if (data.exists()) {
+        const { firstname, lastname, email, occupation } = data.val()
+        setUser(data.val())
+        setState({ ...state, fname: firstname, lname: lastname, email, occupation })
+      }
+    })
+  }, [currentUserUID])
 
   const onChangeText = (value, name) => {
-    setState({...state, [name]: value});
+    setState({ ...state, [name]: value });
   };
 
   const imageHandler = () => {
-    launchImageLibrary.la;
+    let options = {
+      title: 'Select Image',
+      customButtons: [
+        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    launchImageLibrary(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else if (response.assets) {
+        setState({ ...state, photo: response.assets[0] });
+      }
+    });
   };
 
+  const imageUpload = () => {
+    const usersProfile = firebase.storage().ref('usersProfile');
+    const uploadTask = usersProfile
+      .child(state.photo.fileName)
+      .putFile(state.photo.uri);
+    uploadTask.on(
+      'state_changed',
+      snapshot => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(parseInt(progress).toFixed(2))
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            break;
+        }
+      },
+      err => {
+        console.log('error', err);
+        setError({ ...errors, photo: err })
+      },
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          console.log('File available at', downloadURL);
+          database().ref(`users/${currentUserUID}`).child("photoURL").set(downloadURL)
+        });
+        setState({ ...state, photo: null })
+        setProgress(0)
+      },
+    );
+  }
+
   const handleSubmit = () => {
-    console.log('state', state);
-    // let uid = auth().currentUser.uid;
-    // let key = database().ref(`users/${currentUserUID}/todos`).push().key;
-    // let obj = state;
-    // console.log('currentUser', currentUserUID);
-    // database()
-    //   .ref(`users/${currentUserUID}/todos`)
-    //   .child(key)
-    //   .set(obj, err => {
-    //     if (err) {
-    //       console.log('error', err);
-    //     } else {
-    //       console.log('task submitted');
-    //       setState(initialState);
-    //     }
-    //   });
+
+    state.photo && imageUpload();
+
+    if (state.occupation.length < 5) {
+      return setError({ ...errors, occupation: "Length Should be greater than 5" })
+    }
+
+    let obj = {
+      firstname: state.fname,
+      lastname: state.lname,
+      occupation: state.occupation
+    };
+    console.log('obj', obj);
+    database().ref(`users/${currentUserUID}`).update(obj, err => {
+      if (err) {
+        console.log('error', err);
+      } else {
+        console.log('successfully updated');
+        // setState(initialState);
+      }
+    });
   };
 
   const validate = () => {
-    return state.name && state.desc ? true : false;
+    return state.fname && state.lname && state.occupation ? true : false;
   };
 
   return (
     <Container>
-      <Container style={styles.container}>
-        <KeyboardAvoidingScrollView>
+      <KeyboardAvoidingScrollView>
+        <View style={styles.container}>
           <Card style={styles.card}>
-            <CardItem bordered>
+            <CardItem>
               <Text
                 style={{
                   flex: 1,
@@ -77,23 +162,37 @@ const UpdateProfile = () => {
                   fontWeight: 'bold',
                   textAlign: 'center',
                 }}>
-                Add New
+                Update
               </Text>
             </CardItem>
             <View style={{}}>
               <Form>
-                <Item>
-                  <Label style={{fontWeight: 'bold'}}>Name</Label>
+                <Item disabled>
+                  <Label style={{ fontWeight: 'bold' }}>Email</Label>
                   <Input
-                    value={state.name}
-                    onChangeText={text => onChangeText(text, 'name')}
+                    disabled
+                    value={state.email}
                   />
                 </Item>
                 <Item>
-                  <Label style={{fontWeight: 'bold'}}>Desc</Label>
+                  <Label style={{ fontWeight: 'bold' }}>First Name</Label>
                   <Input
-                    value={state.desc}
-                    onChangeText={text => onChangeText(text, 'desc')}
+                    value={state.fname}
+                    onChangeText={text => onChangeText(text, 'fname')}
+                  />
+                </Item>
+                <Item>
+                  <Label style={{ fontWeight: 'bold' }}>Last name</Label>
+                  <Input
+                    value={state.lname}
+                    onChangeText={text => onChangeText(text, 'lname')}
+                  />
+                </Item>
+                <Item>
+                  <Label style={{ fontWeight: 'bold' }}>Occupation</Label>
+                  <Input
+                    value={state.occupation}
+                    onChangeText={text => onChangeText(text, 'occupation')}
                   />
                 </Item>
               </Form>
@@ -101,7 +200,6 @@ const UpdateProfile = () => {
                 style={{
                   marginVertical: 20,
                   marginHorizontal: 15,
-                  flex: 1,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
@@ -114,28 +212,31 @@ const UpdateProfile = () => {
                     borderRadius: 10,
                   }}
                   onPress={imageHandler}>
-                  <Text style={{fontSize: 15}}>Upload Image</Text>
+                  <Text style={{ fontSize: 15 }}>Upload Image</Text>
                 </TouchableOpacity>
-                <Text style={{}} note>
-                  Image Name
+                <Text style={{ maxWidth: '60%' }} note>
+                  {state.photo && state.photo.fileName}
                 </Text>
               </View>
             </View>
+            {progress ? <View style={styles.progressBar}>
+              <Text style={{ textAlign: "center", width: progress + "%", backgroundColor: "lightgreen", fontSize: 14 }}>Upload {progress} %</Text>
+            </View> : null}
             <View>
               <Button
-                style={{margin: 7, borderRadius: 10}}
+                style={{ margin: 7, borderRadius: 10 }}
                 full
                 success
                 disabled={!validate()}
                 onPress={() => handleSubmit()}>
                 <Text>
-                  ADD <Icon name="get-pocket" size={15} color="#fff" />
+                  Save <Icon name="get-pocket" size={15} color="#fff" />
                 </Text>
               </Button>
             </View>
           </Card>
-        </KeyboardAvoidingScrollView>
-      </Container>
+        </View>
+      </KeyboardAvoidingScrollView>
       <MyFooter color="#5CB85C" />
     </Container>
   );
@@ -145,12 +246,14 @@ export default UpdateProfile;
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 100,
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+    // alignItems: "center",
     padding: 5,
-    borderWidth: 1,
-    borderColor: 'green',
+    // borderWidth: 1,
+    // borderColor: 'green',
   },
   card: {
     elevation: 5,
@@ -158,13 +261,24 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     // marginTop: 100,
     padding: 10,
-    // borderColor: "#000"
+    borderColor: '#000',
   },
   cardView: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  progressBar: {
+    marginHorizontal: 8,
+    height: 18,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: "center",
+    borderRadius: 20,
+    borderWidth: 0.5,
+    borderColor: "green",
+    overflow: "hidden",
   },
   button: {
     paddingHorizontal: 20,
@@ -177,7 +291,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    textShadowOffset: {width: 1, height: 0.5},
+    textShadowOffset: { width: 1, height: 0.5 },
     textShadowRadius: 1,
     textShadowColor: '#000',
   },

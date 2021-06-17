@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   Container,
@@ -14,7 +14,7 @@ import {
   Body,
   View,
 } from 'native-base';
-import {Grid, Row, Col} from 'react-native-easy-grid';
+import { Grid, Row, Col } from 'react-native-easy-grid';
 import {
   SafeAreaView,
   StyleSheet,
@@ -28,37 +28,44 @@ import {
 } from 'react-native';
 // import { Auth, firebase } from "../../firebase/config"
 import Auth from '@react-native-firebase/auth';
-import Database from '@react-native-firebase/database';
-import {KeyboardAvoidingScrollView} from 'react-native-keyboard-avoiding-scroll-view';
+import database from '@react-native-firebase/database';
+import storage from '@react-native-firebase/storage';
+import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
+import MyColors from '../../colors/colors';
+import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 
-const Signup = ({navigation, todos}) => {
+const Signup = ({ navigation, todos }) => {
   const initialState = {
     firstname: '',
     lastname: '',
     email: '',
     password: '',
+    occupation: "",
+    photo: null
   };
   const initialErrors = {
     firstname: '',
     lastname: '',
     email: '',
     password: '',
+    occupation: ""
   };
   const [state, setState] = useState(initialState);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [errors, setErrors] = useState(initialErrors);
-  const {firstname, lastname, email} = state;
+  const { firstname, lastname, email, occupation } = state;
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const onchange = (text, name) => {
-    setState({...state, [name]: text});
+    setState({ ...state, [name]: text });
     setErrors(initialErrors);
   };
 
   const sendToDatabase = uid => {
-    let userData = {uid, firstname, lastname, email};
-    Database()
+    let userData = { uid, firstname, lastname, email, occupation };
+    database()
       .ref('users')
       .child(uid)
       .set(userData)
@@ -66,33 +73,104 @@ const Signup = ({navigation, todos}) => {
       .catch(err => console.log('err', err));
   };
 
+  const imageHandler = () => {
+    let options = {
+      title: 'Select Image',
+      customButtons: [
+        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    launchImageLibrary(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else if (response.assets) {
+        setState({ ...state, photo: response.assets[0] });
+      }
+    });
+  };
+
+  const imageUpload = (uid) => {
+    const usersProfile = storage().ref('usersProfile');
+    const uploadTask = usersProfile
+      .child(state.photo.fileName)
+      .putFile(state.photo.uri);
+    uploadTask.on(
+      'state_changed',
+      snapshot => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(parseInt(progress).toFixed(2))
+        switch (snapshot.state) {
+          case 'paused':
+            break;
+          case 'running':
+            break;
+        }
+      },
+      err => {
+        console.log('error', err);
+        setError({ ...errors, photo: err })
+      },
+      async () => {
+        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          console.log('File available at', downloadURL);
+          database().ref(`users/${uid}`).child("photoURL").set(downloadURL)
+        });
+        setState({ ...state, photo: null })
+        setProgress(0)
+        Auth().signOut()
+      },
+    );
+  }
+
   const onsubmit = () => {
-    let {firstname, lastname, email, password} = state;
+    let { firstname, lastname, email, password, occupation } = state;
 
     if (!firstname) {
-      setErrors({...errors, firstname: 'Required'});
+      setErrors({ ...errors, firstname: 'Required' });
     }
     if (!lastname) {
-      setErrors({...errors, lastname: 'Required'});
+      setErrors({ ...errors, lastname: 'Required' });
     }
     if (!email) {
-      setErrors({...errors, email: 'Required'});
+      setErrors({ ...errors, email: 'Required' });
     }
     if (!password) {
-      setErrors({...errors, password: 'Required'});
+      setErrors({ ...errors, password: 'Required' });
+    }
+    if (!occupation) {
+      setErrors({ ...errors, occupation: 'Required' });
     }
     console.log(state);
     // console.log(errors)
 
-    if (firstname && lastname && email && password) {
+
+    if (firstname && lastname && email && password && occupation) {
       setLoading(true);
       Auth()
         .createUserWithEmailAndPassword(email, password)
-        .then(({user}) => {
+        .then(({ user }) => {
           console.log('User account created & signed in! with uid', user.uid);
-          setLoading(false);
+          // setLoading(false);
           sendToDatabase(user.uid);
-          Auth().signOut();
+          if (state.photo) {
+            imageUpload(user.uid);
+          }
+          else {
+            Auth().signOut();
+          }
         })
         .catch(error => {
           if (error.code === 'auth/email-already-in-use') {
@@ -102,11 +180,11 @@ const Signup = ({navigation, todos}) => {
             });
           }
           if (error.code === 'auth/invalid-email') {
-            setErrors({...errors, email: 'Email is invalid!'});
+            setErrors({ ...errors, email: 'Email is invalid!' });
           }
 
           if (error.code === 'auth/weak-password') {
-            setErrors({...errors, password: 'Password is weak!'});
+            setErrors({ ...errors, password: 'Password is weak!' });
           }
           if (error.code === 'auth/network-request-failed') {
             alert('Connection Failed Make sure you have internet connection');
@@ -124,13 +202,13 @@ const Signup = ({navigation, todos}) => {
     <Container>
       <ImageBackground
         source={require('../../images/pexels.jpeg')}
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         resizeMode="cover">
         <StatusBar backgroundColor="green" />
         <KeyboardAvoidingScrollView>
-          <View style={{marginTop: 120, marginHorizontal: 10}}>
+          <View style={{ marginTop: 120, marginHorizontal: 10 }}>
             <View>
-              <Card style={{borderRadius: 10, elevation: 5, opacity: 0.9}}>
+              <Card style={{ borderRadius: 10, elevation: 5, opacity: 0.9 }}>
                 <View style={styles.imageContent}>
                   <Image
                     style={styles.tinyLogo}
@@ -139,15 +217,15 @@ const Signup = ({navigation, todos}) => {
                 </View>
                 {/* <CardItem bordered style={{ flex: 1, justifyContent: "center" }}>
                                 <Text style={{ color: "#4DAD4A", fontSize: 20, fontWeight: "bold" }}>Sign Up</Text>
-                            </CardItem> */}
-                <View style={{marginHorizontal: 10, marginTop: 50}}>
+                  </CardItem> */}
+                <View style={{ marginHorizontal: 10, marginTop: 50 }}>
                   <Form>
                     <View>
                       <Item
                         style={styles.item}
                         rounded
                         error={errors.firstname ? true : false}>
-                        <Label style={{fontWeight: 'bold', fontSize: 15}}>
+                        <Label style={{ fontWeight: 'bold', fontSize: 15 }}>
                           First Name
                         </Label>
                         <Input
@@ -164,7 +242,7 @@ const Signup = ({navigation, todos}) => {
                         style={styles.item}
                         rounded
                         error={errors.lastname ? true : false}>
-                        <Label style={{fontWeight: 'bold', fontSize: 15}}>
+                        <Label style={{ fontWeight: 'bold', fontSize: 15 }}>
                           Last Name
                         </Label>
                         <Input
@@ -181,7 +259,7 @@ const Signup = ({navigation, todos}) => {
                         style={styles.item}
                         rounded
                         error={errors.email ? true : false}>
-                        <Label style={{fontWeight: 'bold', fontSize: 15}}>
+                        <Label style={{ fontWeight: 'bold', fontSize: 15 }}>
                           Email
                         </Label>
                         <Input
@@ -197,8 +275,23 @@ const Signup = ({navigation, todos}) => {
                       <Item
                         style={styles.item}
                         rounded
+                        error={errors.occupation ? true : false}>
+                        <Label style={{ fontWeight: 'bold' }}>Occupation</Label>
+                        <Input
+                          value={state.occupation}
+                          onChangeText={text => onchange(text, 'occupation')}
+                        />
+                      </Item>
+                      {errors.occupation ? (
+                        <Text style={styles.error}>{errors.occupation}</Text>
+                      ) : null}
+                    </View>
+                    <View>
+                      <Item
+                        style={styles.item}
+                        rounded
                         error={errors.password ? true : false}>
-                        <Label style={{fontWeight: 'bold'}}>Password</Label>
+                        <Label style={{ fontWeight: 'bold' }}>Password</Label>
                         <Input
                           secureTextEntry
                           value={state.password}
@@ -206,17 +299,42 @@ const Signup = ({navigation, todos}) => {
                         />
                       </Item>
                       <Text
-                        style={errors.password ? styles.error : styles.info}>
+                        style={[errors.password ? styles.error : styles.info, { marginLeft: 10, }]}>
                         {errors.password
                           ? errors.password
                           : 'Password shoule be greater than 6'}
                       </Text>
                     </View>
                   </Form>
+                  <View
+                    style={{
+                      marginVertical: 10,
+                      marginHorizontal: 10,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}>
+                    <TouchableOpacity
+                      style={{
+                        padding: 5,
+                        borderColor: MyColors.green,
+                        borderWidth: 1,
+                        borderRadius: 10,
+                      }}
+                      onPress={imageHandler}>
+                      <Text style={{ fontSize: 13 }}>Upload Profile Pic</Text>
+                    </TouchableOpacity>
+                    <Text style={{ maxWidth: '60%' }} note>
+                      {state.photo && state.photo.fileName}
+                    </Text>
+                  </View>
+                  {progress ? <View style={styles.progressBar}>
+                    <Text style={{ textAlign: "center", width: progress + "%", backgroundColor: "lightgreen", fontSize: 14 }}>Upload {progress} %</Text>
+                  </View> : null}
                 </View>
-                <Content style={{marginVertical: 7}}>
+                <Content style={{ marginVertical: 7 }}>
                   <Button
-                    style={{margin: 7, borderRadius: 10}}
+                    style={{ margin: 7, borderRadius: 10 }}
                     full
                     success
                     disabled={loading}
@@ -239,7 +357,7 @@ const Signup = ({navigation, todos}) => {
                   <Text
                     style={[
                       styles.bottomLinkText,
-                      {marginRight: 10, color: 'grey'},
+                      { marginRight: 10, color: 'grey' },
                     ]}
                     onPress={_ => navigation.navigate('login')}>
                     Click Here
@@ -270,7 +388,7 @@ const styles = StyleSheet.create({
     // borderWidth: 2,
     borderColor: 'green',
     position: 'absolute',
-    bottom: '88%',
+    bottom: '90%',
     left: '40%',
     // flex: 1,
     // flexDirection: "row",
@@ -292,13 +410,13 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 12,
     marginBottom: 10,
-    marginLeft: 13,
+    marginLeft: 10,
     color: 'red',
   },
   info: {
     fontSize: 12,
     marginBottom: 10,
-    marginLeft: 5,
+    // marginLeft: 10,
     color: 'grey',
   },
   bottomLinks: {
@@ -319,4 +437,15 @@ const styles = StyleSheet.create({
     color: '#4DAD4A',
     fontWeight: 'bold',
   },
+  progressBar: {
+    marginHorizontal: 8,
+    height: 18,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: "center",
+    borderRadius: 20,
+    borderWidth: 0.5,
+    borderColor: "green",
+    overflow: "hidden",
+  }
 });
