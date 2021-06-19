@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   Container,
@@ -14,7 +14,7 @@ import {
   Body,
   View,
 } from 'native-base';
-import {Grid, Row, Col} from 'react-native-easy-grid';
+import { Grid, Row, Col } from 'react-native-easy-grid';
 import {
   SafeAreaView,
   StyleSheet,
@@ -25,13 +25,13 @@ import {
   ImageBackground,
   StatusBar,
 } from 'react-native';
-import {KeyboardAvoidingScrollView} from 'react-native-keyboard-avoiding-scroll-view';
+import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import backgroundImg from '../../images/background.jpg';
-import {useSelector, useDispatch} from 'react-redux';
-import {loginUser} from '../../store/actions/actions';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginUser } from '../../store/actions/actions';
 import Auth from '@react-native-firebase/auth';
 
-const SignIn = ({navigation}) => {
+const SignIn = ({ navigation }) => {
   const dispatch = useDispatch();
   const todoState = useSelector(state => state.todo);
 
@@ -62,26 +62,26 @@ const SignIn = ({navigation}) => {
   }, []);
 
   const onchange = (text, name) => {
-    setState({...state, [name]: text});
+    setState({ ...state, [name]: text });
     setErrors(initialErrors);
   };
 
   const onsubmit = () => {
     console.log('signin Submit', todoState);
-    let {email, password} = state;
+    let { email, password } = state;
 
     if (!email) {
-      setErrors({...errors, email: 'Required'});
+      setErrors({ ...errors, email: 'Required' });
     }
     if (!password) {
-      setErrors({...errors, password: 'Required'});
+      setErrors({ ...errors, password: 'Required' });
     }
 
     if (email && password) {
       setLoading(true);
       Auth()
         .signInWithEmailAndPassword(state.email, state.password)
-        .then(({user}) => {
+        .then(({ user }) => {
           if (user) {
             dispatch(loginUser(user._user));
             setErrors(initialErrors);
@@ -98,10 +98,10 @@ const SignIn = ({navigation}) => {
             });
           }
           if (error.code === 'auth/user-not-found') {
-            setErrors({...errors, email: 'User with this email not found'});
+            setErrors({ ...errors, email: 'User with this email not found' });
           }
           if (error.code === 'auth/wrong-password') {
-            setErrors({...errors, password: 'The password is invalid'});
+            setErrors({ ...errors, password: 'The password is invalid' });
           }
           if (error.code === 'auth/too-many-requests') {
             setErrors({
@@ -131,7 +131,7 @@ const SignIn = ({navigation}) => {
       }}>
       <ImageBackground
         source={require('../../images/pexels.jpeg')}
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         resizeMode="cover">
         <KeyboardAvoidingScrollView>
           <View
@@ -142,7 +142,7 @@ const SignIn = ({navigation}) => {
               borderColor: 'green',
             }}>
             <View>
-              <Card style={{borderRadius: 10, elevation: 5, opacity: 0.9}}>
+              <Card style={{ borderRadius: 10, elevation: 5, opacity: 0.9 }}>
                 <View style={styles.imageContent}>
                   <Image
                     style={styles.tinyLogo}
@@ -153,7 +153,7 @@ const SignIn = ({navigation}) => {
                 {/* <CardItem style={{ flex: 1, justifyContent: "center", fontSize: 20 }}>
                                 <Text style={{ color: "#4DAD4A", fontSize: 25, fontWeight: "bold" }}>Login</Text>
                             </CardItem> */}
-                <View style={{marginHorizontal: 10, marginTop: 50}}>
+                <View style={{ marginHorizontal: 10, marginTop: 50 }}>
                   <Form>
                     <View>
                       <Item
@@ -202,9 +202,9 @@ const SignIn = ({navigation}) => {
                     </View>
                   </Form>
                 </View>
-                <Content style={{marginVertical: 7}}>
+                <Content style={{ marginVertical: 7 }}>
                   <Button
-                    style={{margin: 7, borderRadius: 10}}
+                    style={{ margin: 7, borderRadius: 10 }}
                     full
                     success
                     disabled={loading}
@@ -218,7 +218,7 @@ const SignIn = ({navigation}) => {
                   </Button>
                 </Content>
                 <View>
-                  <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+                  <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>
                     OR
                   </Text>
                 </View>

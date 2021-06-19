@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Title,
@@ -13,23 +13,22 @@ import {
   Label,
   Body,
 } from 'native-base';
-import {View, StyleSheet, StatusBar, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import MyFooter from '../Footer/Footer';
 import MyHeader from '../Header/Header';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Auth from '@react-native-firebase/auth';
 import Database from '@react-native-firebase/database';
 
-const HomeScreen = ({navigation}) => {
-  const data = {name: 'hassan', email: 'hasso@gmail.com', age: 22};
+const HomeScreen = ({ navigation }) => {
+  const data = { name: 'hassan', email: 'hasso@gmail.com', age: 22 };
 
   const [user, setUser] = useState({});
-  const todoState = useSelector(state => state.todo);
 
   useEffect(() => {
-    console.log(todoState);
+
     Auth().onAuthStateChanged(user => {
       if (user) {
         Database()
@@ -37,6 +36,7 @@ const HomeScreen = ({navigation}) => {
           .child(user.uid)
           .on('value', snap => {
             setUser(snap.val());
+            console.log('user', user);
           });
       } else {
         console.log('no user');
@@ -58,7 +58,7 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <Container>
-      <StatusBar backgroundColor="green" />
+      <StatusBar barStyle="light-content" backgroundColor="green" />
       {/* <MyHeader title="Dashboard" color="#5CB85C" /> */}
       <Container style={styles.container}>
         <Card style={styles.card}>
@@ -68,7 +68,7 @@ const HomeScreen = ({navigation}) => {
             </Text>
           </View>
           <View>
-            <Text style={{textAlign: 'center'}}>
+            <Text style={{ textAlign: 'center' }}>
               Choose one of the following
             </Text>
           </View>
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    textShadowOffset: {width: 1, height: 0.5},
+    textShadowOffset: { width: 1, height: 0.5 },
     textShadowRadius: 1,
     textShadowColor: '#000',
   },

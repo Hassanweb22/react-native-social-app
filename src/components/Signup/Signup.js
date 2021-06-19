@@ -32,9 +32,12 @@ import database from '@react-native-firebase/database';
 import storage from '@react-native-firebase/storage';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import MyColors from '../../colors/colors';
-import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
+import { loginUser } from '../../store/actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const Signup = ({ navigation, todos }) => {
+  const dispatch = useDispatch()
   const initialState = {
     firstname: '',
     lastname: '',
@@ -73,67 +76,6 @@ const Signup = ({ navigation, todos }) => {
       .catch(err => console.log('err', err));
   };
 
-  const imageHandler = () => {
-    let options = {
-      title: 'Select Image',
-      customButtons: [
-        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-      ],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    launchImageLibrary(options, response => {
-      console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else if (response.assets) {
-        setState({ ...state, photo: response.assets[0] });
-      }
-    });
-  };
-
-  const imageUpload = (uid) => {
-    const usersProfile = storage().ref('usersProfile');
-    const uploadTask = usersProfile
-      .child(state.photo.fileName)
-      .putFile(state.photo.uri);
-    uploadTask.on(
-      'state_changed',
-      snapshot => {
-        // Observe state change events such as progress, pause, and resume
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(parseInt(progress).toFixed(2))
-        switch (snapshot.state) {
-          case 'paused':
-            break;
-          case 'running':
-            break;
-        }
-      },
-      err => {
-        console.log('error', err);
-        setError({ ...errors, photo: err })
-      },
-      async () => {
-        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-          console.log('File available at', downloadURL);
-          database().ref(`users/${uid}`).child("photoURL").set(downloadURL)
-        });
-        setState({ ...state, photo: null })
-        setProgress(0)
-        Auth().signOut()
-      },
-    );
-  }
 
   const onsubmit = () => {
     let { firstname, lastname, email, password, occupation } = state;
@@ -162,15 +104,11 @@ const Signup = ({ navigation, todos }) => {
       Auth()
         .createUserWithEmailAndPassword(email, password)
         .then(({ user }) => {
-          console.log('User account created & signed in! with uid', user.uid);
-          // setLoading(false);
-          sendToDatabase(user.uid);
-          if (state.photo) {
-            imageUpload(user.uid);
-          }
-          else {
-            Auth().signOut();
-          }
+          console.log('User account created & signed in! with uid', user);
+          sendToDatabase(user.uid)
+          dispatch(loginUser(user._user));
+          setLoading(false);
+          // Auth().signOut();
         })
         .catch(error => {
           if (error.code === 'auth/email-already-in-use') {
@@ -204,7 +142,6 @@ const Signup = ({ navigation, todos }) => {
         source={require('../../images/pexels.jpeg')}
         style={{ flex: 1 }}
         resizeMode="cover">
-        <StatusBar backgroundColor="green" />
         <KeyboardAvoidingScrollView>
           <View style={{ marginTop: 120, marginHorizontal: 10 }}>
             <View>
@@ -217,7 +154,7 @@ const Signup = ({ navigation, todos }) => {
                 </View>
                 {/* <CardItem bordered style={{ flex: 1, justifyContent: "center" }}>
                                 <Text style={{ color: "#4DAD4A", fontSize: 20, fontWeight: "bold" }}>Sign Up</Text>
-                  </CardItem> */}
+                              </CardItem> */}
                 <View style={{ marginHorizontal: 10, marginTop: 50 }}>
                   <Form>
                     <View>
@@ -306,32 +243,8 @@ const Signup = ({ navigation, todos }) => {
                       </Text>
                     </View>
                   </Form>
-                  <View
-                    style={{
-                      marginVertical: 10,
-                      marginHorizontal: 10,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
-                    <TouchableOpacity
-                      style={{
-                        padding: 5,
-                        borderColor: MyColors.green,
-                        borderWidth: 1,
-                        borderRadius: 10,
-                      }}
-                      onPress={imageHandler}>
-                      <Text style={{ fontSize: 13 }}>Upload Profile Pic</Text>
-                    </TouchableOpacity>
-                    <Text style={{ maxWidth: '60%' }} note>
-                      {state.photo && state.photo.fileName}
-                    </Text>
-                  </View>
-                  {progress ? <View style={styles.progressBar}>
-                    <Text style={{ textAlign: "center", width: progress + "%", backgroundColor: "lightgreen", fontSize: 14 }}>Upload {progress} %</Text>
-                  </View> : null}
                 </View>
+
                 <Content style={{ marginVertical: 7 }}>
                   <Button
                     style={{ margin: 7, borderRadius: 10 }}

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   Card,
@@ -14,7 +14,7 @@ import {
 import Modal from 'react-native-modal';
 import database from '@react-native-firebase/database';
 
-function ModalTester({item, loginUser}) {
+function ModalTester({ item, loginUser }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const initialState = {
     name: '',
@@ -24,7 +24,7 @@ function ModalTester({item, loginUser}) {
   const [updated, setupdated] = useState('');
 
   useEffect(() => {
-    setState({name: item.name});
+    setState({ name: item.name });
     return () => {
       setModalVisible(false);
     };
@@ -36,7 +36,7 @@ function ModalTester({item, loginUser}) {
   };
 
   const onChangeText = (value, name) => {
-    setState({...state, [name]: value});
+    setState({ ...state, [name]: value });
   };
 
   const handleSubmit = () => {
@@ -68,10 +68,10 @@ function ModalTester({item, loginUser}) {
         onPress={toggleModal}
       />
       <Modal
-        animationIn="fadeInDown"
-        animationOut="fadeOutDown"
-        animationOutTiming={600}
+        animationIn="bounceInLeft"
         animationInTiming={600}
+        animationOut="bounceOutright"
+        animationOutTiming={600}
         isVisible={isModalVisible}>
         <View style={{}}>
           <Card style={styles.card}>
@@ -101,7 +101,7 @@ function ModalTester({item, loginUser}) {
                 />
               </View>
             </CardItem>
-            <View style={{marginHorizontal: 10}}>
+            <View style={{ marginHorizontal: 10 }}>
               <Form>
                 <View
                   style={{
@@ -110,17 +110,16 @@ function ModalTester({item, loginUser}) {
                     justifyContent: 'center',
                   }}>
                   <Item>
-                    <Label style={{fontWeight: 'bold'}}>Name</Label>
+                    <Label style={{ fontWeight: 'bold' }}>Name</Label>
                     <Input
                       value={state.name}
                       onChangeText={text => onChangeText(text, 'name')}
                     />
                   </Item>
-                  <Text style={{marginLeft: 20}}>{updated ? updated : ''}</Text>
                 </View>
-                <View style={{marginLeft: 10}}>
+                <View style={{ marginLeft: 10 }}>
                   <Button
-                    style={{margin: 7, borderRadius: 10}}
+                    style={{ margin: 7, borderRadius: 10 }}
                     full
                     success
                     disabled={!state.name}

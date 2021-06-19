@@ -71,7 +71,7 @@ const UpdateProfile = () => {
       },
     };
 
-    launchImageLibrary(options, response => {
+    launchImageLibrary({}, response => {
       console.log('Response = ', response);
 
       if (response.didCancel) {

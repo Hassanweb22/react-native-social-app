@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   Container,
@@ -14,7 +14,7 @@ import {
   View,
   Icon,
 } from 'native-base';
-import {Grid, Row, Col} from 'react-native-easy-grid';
+import { Grid, Row, Col } from 'react-native-easy-grid';
 import {
   SafeAreaView,
   StyleSheet,
@@ -26,11 +26,11 @@ import {
   ImageBackground,
   StatusBar,
 } from 'react-native';
-import {KeyboardAvoidingScrollView} from 'react-native-keyboard-avoiding-scroll-view';
+import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import Auth from '@react-native-firebase/auth';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 
-const ForgetPassword = ({navigation}) => {
+const ForgetPassword = ({ navigation }) => {
   const initialState = {
     email: '',
   };
@@ -57,16 +57,16 @@ const ForgetPassword = ({navigation}) => {
   }, []);
 
   const onchange = (text, name) => {
-    setState({...state, [name]: text});
+    setState({ ...state, [name]: text });
     setErrors(initialErrors);
   };
 
   const onsubmit = () => {
     console.log('state', state);
-    let {email} = state;
+    let { email } = state;
 
     if (!email) {
-      setErrors({...errors, email: 'Required'});
+      setErrors({ ...errors, email: 'Required' });
     }
     if (email) {
       console.log(state);
@@ -74,7 +74,7 @@ const ForgetPassword = ({navigation}) => {
         .sendPasswordResetEmail(state.email)
         .then(function () {
           Alert.alert('Alert', 'My Alert Msg', [
-            {text: 'OK', onPress: () => console.log('OK')},
+            { text: 'OK', onPress: () => console.log('OK') },
           ]);
         })
         .catch(function (error) {
@@ -89,13 +89,12 @@ const ForgetPassword = ({navigation}) => {
     <Container>
       <ImageBackground
         source={require('../../images/pexels.jpeg')}
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         resizeMode="cover">
-        <StatusBar backgroundColor="green" />
         <KeyboardAvoidingScrollView>
-          <View style={{marginHorizontal: 10, marginTop: 180}}>
+          <View style={{ marginHorizontal: 10, marginTop: 180 }}>
             <View>
-              <Card style={{borderRadius: 10, elevation: 5, opacity: 0.9}}>
+              <Card style={{ borderRadius: 10, elevation: 5, opacity: 0.9 }}>
                 <View style={styles.imageContent}>
                   <Image
                     style={styles.tinyLogo}
@@ -114,7 +113,7 @@ const ForgetPassword = ({navigation}) => {
                     Fore
                   </Text>
                 </CardItem> */}
-                <View style={{marginHorizontal: 10, marginTop: 50}}>
+                <View style={{ marginHorizontal: 10, marginTop: 50 }}>
                   <Form>
                     <View>
                       <Item
@@ -139,9 +138,9 @@ const ForgetPassword = ({navigation}) => {
                     </View>
                   </Form>
                 </View>
-                <Content style={{marginVertical: 7}}>
+                <Content style={{ marginVertical: 7 }}>
                   <Button
-                    style={{margin: 7, borderRadius: 10}}
+                    style={{ margin: 7, borderRadius: 10 }}
                     full
                     success
                     disabled={loading}
@@ -155,7 +154,7 @@ const ForgetPassword = ({navigation}) => {
                   </Button>
                 </Content>
                 <View>
-                  <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+                  <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>
                     OR
                   </Text>
                 </View>

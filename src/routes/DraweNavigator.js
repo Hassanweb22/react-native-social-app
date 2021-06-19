@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {Button} from 'native-base';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import { Button } from 'native-base';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import MyColors from '../colors/colors';
 
-import {loginUser} from '../store/actions/actions';
+import { loginUser } from '../store/actions/actions';
 import HomeScreen from '../components/HomeScreen/HomeScreen';
 import AddTodo from '../components/AddTodo/AddTodo';
 import Lists from '../components/Lists/Lists';
@@ -19,25 +19,33 @@ export default function MyDrawerNavigator() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // console.log('todoState', todoState);
+    console.log('todoState', todoState);
   }, []);
+
   return (
     <Drawer.Navigator
-      drawerContent={({...props}) => <CustomDrawerContent {...props} />}
-      hideStatusBar={true}
-      screenOptions={({navigation, route}) => ({
+      drawerContent={({ ...props }) => <CustomDrawerContent {...props} />}
+      // hideStatusBar={true}
+      drawerContentOptions={{
+        activeBackgroundColor: "#c0edc1",
+        activeTintColor: "green",
+        inactiveTintColor: MyColors.green,
+
+      }}
+      screenOptions={({ navigation, route }) => ({
         headerShown: true,
         headerStyle: {
           // borderWidth: 1,
           backgroundColor: MyColors.green,
         },
+
         headerTitleStyle: {
           color: '#fff',
         },
         headerLeft: () => {
           return (
             <Icon
-              style={{marginLeft: 20}}
+              style={{ marginLeft: 20 }}
               name="bars"
               size={25}
               color={'#fff'}
@@ -47,7 +55,7 @@ export default function MyDrawerNavigator() {
         },
         headerRight: () => {
           return (
-            <Button transparent style={{marginRight: 20}}>
+            <Button transparent style={{ marginRight: 20 }}>
               <Icon
                 name="sign-out-alt"
                 size={25}
@@ -66,7 +74,7 @@ export default function MyDrawerNavigator() {
       <Drawer.Screen
         options={{
           title: 'Dshboard',
-          drawerIcon: ({color, focused, size}) => (
+          drawerIcon: ({ color, focused, size }) => (
             <Icon name="home" size={size} color={color} />
           ),
         }}
@@ -75,7 +83,7 @@ export default function MyDrawerNavigator() {
       />
       <Drawer.Screen
         options={{
-          drawerIcon: ({color, focused, size}) => (
+          drawerIcon: ({ color, focused, size }) => (
             <Icon name="plus-circle" size={size} color={color} />
           ),
           drawerLabel: 'Add Task',
@@ -85,7 +93,7 @@ export default function MyDrawerNavigator() {
       />
       <Drawer.Screen
         options={{
-          drawerIcon: ({color, focused, size}) => (
+          drawerIcon: ({ color, focused, size }) => (
             <Icon name="list" size={size} color={color} />
           ),
           drawerLabel: 'Task List',
@@ -95,7 +103,7 @@ export default function MyDrawerNavigator() {
       />
       <Drawer.Screen
         options={{
-          drawerIcon: ({color, focused, size}) => (
+          drawerIcon: ({ color, focused, size }) => (
             <Icon name="scroll" size={19} color={color} />
           ),
           drawerLabel: 'Update Profile',
@@ -106,6 +114,6 @@ export default function MyDrawerNavigator() {
         name="Update Profile"
         component={UpdateProfile}
       />
-    </Drawer.Navigator>
+    </Drawer.Navigator >
   );
 }

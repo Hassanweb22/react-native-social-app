@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   Container,
@@ -13,15 +13,15 @@ import {
   Label,
   Body,
 } from 'native-base';
-import {View, StyleSheet} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import MyHeader from '../Header/Header';
 import MyFooter from '../Footer/Footer';
-import {KeyboardAvoidingScrollView} from 'react-native-keyboard-avoiding-scroll-view';
+import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
-const TodoForm = ({navigation, todos}) => {
+const TodoForm = ({ navigation, todos }) => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
   const initialState = {
     name: '',
@@ -30,7 +30,7 @@ const TodoForm = ({navigation, todos}) => {
   const [state, setState] = useState(initialState);
 
   const onChangeText = (value, name) => {
-    setState({...state, [name]: value});
+    setState({ ...state, [name]: value });
   };
   const handleSubmit = () => {
     // console.log('state', state);
@@ -72,17 +72,17 @@ const TodoForm = ({navigation, todos}) => {
                 Add New
               </Text>
             </CardItem>
-            <View style={{marginHorizontal: 10}}>
+            <View style={{ marginHorizontal: 10 }}>
               <Form>
                 <Item>
-                  <Label style={{fontWeight: 'bold'}}>Name</Label>
+                  <Label style={{ fontWeight: 'bold' }}>Name</Label>
                   <Input
                     value={state.name}
                     onChangeText={text => onChangeText(text, 'name')}
                   />
                 </Item>
                 <Item>
-                  <Label style={{fontWeight: 'bold'}}>Desc</Label>
+                  <Label style={{ fontWeight: 'bold' }}>Desc</Label>
                   <Input
                     value={state.desc}
                     onChangeText={text => onChangeText(text, 'desc')}
@@ -92,7 +92,7 @@ const TodoForm = ({navigation, todos}) => {
             </View>
             <View>
               <Button
-                style={{margin: 7, borderRadius: 10}}
+                style={{ margin: 7, borderRadius: 10 }}
                 full
                 success
                 disabled={!validate()}
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    textShadowOffset: {width: 1, height: 0.5},
+    textShadowOffset: { width: 1, height: 0.5 },
     textShadowRadius: 1,
     textShadowColor: '#000',
   },
