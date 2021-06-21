@@ -21,7 +21,6 @@ import SignIn from './src/components/Sigin/Sigin';
 import Signup from './src/components/Signup/Signup';
 import ForgetPassword from './src/components/ForgetPassword/ForgetPassword';
 import Home from './src/components/HomeScreen/HomeScreen';
-import AddTodo from './src/components/AddTodo/AddTodo';
 import Lists from './src/components/Lists/Lists';
 import Auth from '@react-native-firebase/auth';
 import { Button, Container, Text } from 'native-base';

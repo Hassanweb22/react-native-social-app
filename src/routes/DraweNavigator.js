@@ -7,8 +7,10 @@ import MyColors from '../colors/colors';
 
 import { loginUser } from '../store/actions/actions';
 import HomeScreen from '../components/HomeScreen/HomeScreen';
-import AddTodo from '../components/AddTodo/AddTodo';
+import AddPost from '../components/AddPost/AddPost';
 import Lists from '../components/Lists/Lists';
+import MyPosts from '../components/MyPosts/MyPosts';
+import AllPosts from '../components/AllPosts/AllPosts';
 import CustomDrawerContent from '../components/CustomDrawer/CustomDrawer';
 import Auth from '@react-native-firebase/auth';
 import UpdateProfile from '../components/UpdateProfile/UpdateProfile';
@@ -86,20 +88,30 @@ export default function MyDrawerNavigator() {
           drawerIcon: ({ color, focused, size }) => (
             <Icon name="plus-circle" size={size} color={color} />
           ),
-          drawerLabel: 'Add Task',
+          drawerLabel: 'Add Post',
         }}
-        name="AddTodo"
-        component={AddTodo}
+        name="Add Post"
+        component={AddPost}
       />
       <Drawer.Screen
         options={{
           drawerIcon: ({ color, focused, size }) => (
             <Icon name="list" size={size} color={color} />
           ),
-          drawerLabel: 'Task List',
+          drawerLabel: 'My Posts',
         }}
-        name="Lists"
-        component={Lists}
+        name="MyPosts"
+        component={MyPosts}
+      />
+      <Drawer.Screen
+        options={{
+          drawerIcon: ({ color, focused, size }) => (
+            <Icon name="list" size={size} color={color} />
+          ),
+          drawerLabel: 'Posts',
+        }}
+        name="Posts"
+        component={AllPosts}
       />
       <Drawer.Screen
         options={{

@@ -75,13 +75,13 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.bottomLinks}>
             <TouchableOpacity
               style={styles.bottomLink}
-              onPress={_ => navigation.navigate('AddTodo')}>
-              <Text style={styles.bottomLinkText}>Add Task</Text>
+              onPress={_ => navigation.navigate('Add Post')}>
+              <Text style={styles.bottomLinkText}>Add Posts</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.bottomLink}
-              onPress={_ => navigation.navigate('Lists')}>
-              <Text style={styles.bottomLinkText}>Check Tasks</Text>
+              onPress={_ => navigation.navigate('Posts')}>
+              <Text style={styles.bottomLinkText}>Check Posts</Text>
             </TouchableOpacity>
           </View>
         </Card>

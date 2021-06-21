@@ -31,7 +31,6 @@ function ModalTester({ item, loginUser }) {
   }, [item]);
 
   const toggleModal = () => {
-    setupdated('');
     setModalVisible(!isModalVisible);
   };
 
@@ -68,10 +67,10 @@ function ModalTester({ item, loginUser }) {
         onPress={toggleModal}
       />
       <Modal
-        animationIn="bounceInLeft"
-        animationInTiming={600}
-        animationOut="bounceOutright"
-        animationOutTiming={600}
+        // animationIn="bounceInLeft"
+        // animationOut="bounceOutright"
+        // animationOutTiming={600}
+        // animationInTiming={600}
         isVisible={isModalVisible}>
         <View style={{}}>
           <Card style={styles.card}>
