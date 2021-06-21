@@ -36,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
           .child(user.uid)
           .on('value', snap => {
             setUser(snap.val());
-            console.log('user', user);
+            // console.log('user', user);
           });
       } else {
         console.log('no user');

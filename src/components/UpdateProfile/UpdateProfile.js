@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
-  Container,
-  Content,
-  Button,
-  Card,
-  CardItem,
-  Text,
-  Form,
-  Item,
-  Input,
-  Label,
-  Body,
+  Container, Content, Button, Card, CardItem, Text, Form, Item, Input, Label, Body, Thumbnail,
 } from 'native-base';
 import MyColors from '../../colors/colors';
-import { View, StyleSheet, TouchableOpacity, ImagePickerIOS } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ImagePickerIOS, SafeAreaView, Dimensions } from 'react-native';
 import MyHeader from '../Header/Header';
 import MyFooter from '../Footer/Footer';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
@@ -24,6 +14,7 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import { useSelector } from 'react-redux';
 import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
+import PhotoModal from "./PhotoModal"
 
 const UpdateProfile = () => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
@@ -44,6 +35,8 @@ const UpdateProfile = () => {
   const [user, setUser] = useState({});
   const [progress, setProgress] = useState(0);
   const [errors, setError] = useState(initialError);
+
+
 
   useEffect(() => {
     database().ref(`users/${currentUserUID}`).on("value", data => {
@@ -87,9 +80,9 @@ const UpdateProfile = () => {
   };
 
   const imageUpload = () => {
-    const usersProfile = firebase.storage().ref('usersProfile');
+    const usersProfile = firebase.storage().ref(`usersProfile/${currentUserUID}/profilePhoto`);
     const uploadTask = usersProfile
-      .child(state.photo.fileName)
+      .child("dp")
       .putFile(state.photo.uri);
     uploadTask.on(
       'state_changed',
@@ -148,22 +141,17 @@ const UpdateProfile = () => {
     return state.fname && state.lname && state.occupation ? true : false;
   };
 
+  const height = Dimensions.get("window").height - 100
+
   return (
     <Container>
-      <KeyboardAvoidingScrollView>
-        <View style={styles.container}>
+      <View style={styles.container}>
+        <KeyboardAvoidingScrollView style={{ borderWidth: 0 }}>
           <Card style={styles.card}>
             <CardItem>
-              <Text
-                style={{
-                  flex: 1,
-                  color: '#4DAD4A',
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}>
-                Update
-              </Text>
+              <View style={{ flex: 1, flexDirection: "row", justifyContent: "center", padding: 10 }}>
+                <PhotoModal photoURL={user.photoURL} currentUserUID={currentUserUID} />
+              </View>
             </CardItem>
             <View style={{}}>
               <Form>
@@ -197,13 +185,7 @@ const UpdateProfile = () => {
                 </Item>
               </Form>
               <View
-                style={{
-                  marginVertical: 20,
-                  marginHorizontal: 15,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
+                style={{ marginVertical: 20, marginHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
                 <TouchableOpacity
                   style={{
                     padding: 5,
@@ -235,8 +217,8 @@ const UpdateProfile = () => {
               </Button>
             </View>
           </Card>
-        </View>
-      </KeyboardAvoidingScrollView>
+        </KeyboardAvoidingScrollView>
+      </View>
       <MyFooter color="#5CB85C" />
     </Container>
   );
@@ -246,21 +228,19 @@ export default UpdateProfile;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    // alignItems: "center",
+    // flexDirection: 'column',
+    // justifyContent: 'space-around',
     padding: 5,
-    // borderWidth: 1,
-    // borderColor: 'green',
+    // borderWidth: 3,
+    // borderColor: 'red'
   },
   card: {
     elevation: 5,
     borderRadius: 20,
     marginHorizontal: 5,
-    // marginTop: 100,
-    padding: 10,
+    marginTop: 50,
+    padding: 8,
     borderColor: '#000',
   },
   cardView: {
@@ -272,12 +252,13 @@ const styles = StyleSheet.create({
   progressBar: {
     marginHorizontal: 8,
     height: 18,
-    flex: 1,
+    display: "flex",
     flexDirection: 'row',
     alignItems: "center",
     borderRadius: 20,
     borderWidth: 0.5,
     borderColor: "green",
+    // backgroundColor: "lightgreen",
     overflow: "hidden",
   },
   button: {
