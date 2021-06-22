@@ -117,8 +117,8 @@ const TodoForm = ({ navigation, todos }) => {
 
     if (state.title) {
       let iosDate = new Date(firebase.database().getServerTime())
-      let androidDate = new Date()
-      let obj = { title, createdAt: Platform.os === "ios" ? iosDate : new Date(), key, userID: currentUserUID };
+      let androidDate = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+      let obj = { title, createdAt: androidDate, key, userID: currentUserUID };
       // console.log("obj", obj.createdAt)
       database()
         .ref(`users/${currentUserUID}/posts`)

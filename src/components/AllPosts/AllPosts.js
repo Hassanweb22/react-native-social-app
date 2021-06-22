@@ -51,7 +51,6 @@ const Posts = ({ navigation }) => {
                             if (userID !== currentUserUID) {
                                 if (snap.val()[userID]?.posts) {
                                     let userPost = snap.val()[userID]?.posts
-                                    console.log("jgh", snap.val())
                                     Object.keys(userPost).map(postKey => temp.push(userPost[postKey]))
                                 }
                                 else {
@@ -59,7 +58,6 @@ const Posts = ({ navigation }) => {
                                 }
                             }
                         })
-                        console.log('temp posts', temp);
                         setPosts(temp)
                     }
                 });

@@ -24,6 +24,7 @@ import VectorIcon from "react-native-vector-icons"
 import { useSelector } from "react-redux"
 import database from "@react-native-firebase/database"
 import storage from "@react-native-firebase/storage"
+import LoadingView from "../UpdateProfile/LoadingView"
 
 
 const CustomDrawer = ({ progress, ...props }) => {
@@ -33,6 +34,7 @@ const CustomDrawer = ({ progress, ...props }) => {
   const userDarwer = useSelector(state => state.todo)
 
   const [user, setUser] = useState({})
+  const [imageLoad, setImageLoad] = useState(false);
 
   useEffect(() => {
 
@@ -62,7 +64,15 @@ const CustomDrawer = ({ progress, ...props }) => {
       {!!Object.keys(user).length &&
         <ListItem thumbnail>
           <Left>
-            <Thumbnail source={{ uri: user?.photoURL ? user?.photoURL : uri }} />
+            <Thumbnail source={{ uri: user?.photoURL ? user?.photoURL : uri }}
+              onLoadStart={() => {
+                return setImageLoad(true)
+              }}
+              onLoadEnd={_ => {
+                setImageLoad(false)
+              }}
+            />
+            {imageLoad && <LoadingView />}
           </Left>
           <Body>
             <Text style={{}}>{user.firstname + " " + user.lastname}</Text>
