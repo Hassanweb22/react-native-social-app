@@ -14,6 +14,8 @@ import AllPosts from '../components/AllPosts/AllPosts';
 import CustomDrawerContent from '../components/CustomDrawer/CustomDrawer';
 import Auth from '@react-native-firebase/auth';
 import UpdateProfile from '../components/UpdateProfile/UpdateProfile';
+import StackPostsAll from './StackPostsAll';
+import StackPostMy from './StackPostMy';
 
 export default function MyDrawerNavigator() {
   const Drawer = createDrawerNavigator();
@@ -35,7 +37,7 @@ export default function MyDrawerNavigator() {
 
       }}
       screenOptions={({ navigation, route }) => ({
-        headerShown: true,
+        headerShown: !(route.name === "Posts" || route.name === "MyPosts"),
         headerStyle: {
           // borderWidth: 1,
           backgroundColor: MyColors.green,
@@ -51,7 +53,10 @@ export default function MyDrawerNavigator() {
               name="bars"
               size={25}
               color={'#fff'}
-              onPress={() => navigation.openDrawer()}
+              onPress={() => {
+                console.log("currentRoue name", route)
+                navigation.openDrawer()
+              }}
             />
           );
         },
@@ -101,7 +106,7 @@ export default function MyDrawerNavigator() {
           drawerLabel: 'My Posts',
         }}
         name="MyPosts"
-        component={MyPosts}
+        component={StackPostMy}
       />
       <Drawer.Screen
         options={{
@@ -111,7 +116,7 @@ export default function MyDrawerNavigator() {
           drawerLabel: 'Posts',
         }}
         name="Posts"
-        component={AllPosts}
+        component={StackPostsAll}
       />
       <Drawer.Screen
         options={{

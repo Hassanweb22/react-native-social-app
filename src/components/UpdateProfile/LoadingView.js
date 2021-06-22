@@ -1,9 +1,9 @@
 import React from 'react'
 import { StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 
-const LoadingView = () => {
+const LoadingView = ({ postPic }) => {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { borderRadius: postPic ? 0 : 50 }]}>
             <ActivityIndicator size="small" color="black" />
         </View>
     )
@@ -18,8 +18,8 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0,
         bottom: 0,
+        backgroundColor: "#616161",
         opacity: 0.7,
-        backgroundColor: "grey",
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 100 / 2,

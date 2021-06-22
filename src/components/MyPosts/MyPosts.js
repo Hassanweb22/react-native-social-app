@@ -28,7 +28,7 @@ import { View, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { useSelector } from 'react-redux';
-import IndIndividualPost from '../AllPosts/IndividualPost'
+import IndividualPost from '../AllPosts/IndividualPost'
 
 
 const Posts = ({ navigation }) => {
@@ -61,6 +61,7 @@ const Posts = ({ navigation }) => {
                 });
         };
         dataFunc();
+        return () => console.log("Clear")
     }, []);
 
     const deleteTodo = id => {
@@ -71,7 +72,7 @@ const Posts = ({ navigation }) => {
         <Container style={styles.container} >
             <ScrollView>
                 {posts.length > 0 ? posts.map(item => {
-                    return <IndIndividualPost key={item.key} item={item} />
+                    return <IndividualPost mypost navigation={navigation} key={item.key} postID={item.key} item={item} />
                 }) :
                     <Container style={{ borderColor: "red", flex: 1, alignItems: "center", justifyContent: "flex-end", height: Dimensions.get("window").width }}>
                         <Text style={{ fontWeight: "bold" }}>You Have No Posts</Text>

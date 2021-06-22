@@ -23,7 +23,7 @@ function ModalTester({ photoURL, currentUserUID }) {
     const [imageLoad, setImageLoad] = useState(false);
 
     useEffect(() => {
-        console.log("imageload", imageLoad)
+        // console.log("imageload", imageLoad)
         setImageLoad(false)
         return () => {
             setModalVisible(false);
@@ -55,10 +55,6 @@ function ModalTester({ photoURL, currentUserUID }) {
                     onLoadStart={() => {
                         console.log("image load true")
                         return setImageLoad(true)
-                    }}
-                    onLoad={() => {
-                        console.log("image load false")
-                        return setImageLoad(false)
                     }}
                     onLoadEnd={_ => {
                         setImageLoad(false)

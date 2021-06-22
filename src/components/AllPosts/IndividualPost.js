@@ -5,35 +5,28 @@ import { Body, Card, Text, CardItem, Content, Left, Thumbnail, Button, Container
 import Icon from "react-native-vector-icons/FontAwesome5"
 import database from '@react-native-firebase/database'
 import storage from '@react-native-firebase/storage'
-
+import LoadingView from '../UpdateProfile/LoadingView'
 import { useSelector } from 'react-redux'
 
-const IndividualPost = ({ item }) => {
+const IndividualPost = (props) => {
+    const { item, navigation, mypost } = props
     const currentUserUID = useSelector(state => state.todo.loginUser.uid);
     const temURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAMFBMVEXBx9D///+9w83Y3OHDydL19vfS1t3q7O/IzdXt7/HN0tnd4OXGy9Tl5+v4+frg4+dnyPTjAAAKUUlEQVR4nN2d28KjKgyFGUTF8/u/7dba/tWWQ0IWSve6mYuZqX5yTEiC+pdfc9cuQ9X01o7GKGNGa/umGpa2my94usr543M3VdboVcql7S+Mraa8oLkI53boNzI324lzI+2HNhdmDsJ5aoyn2QKg2jRTDko4YVdZNt2b0lYd+oWwhG2jkvFekKppoe8EJNzwRHRvSiQkirCuQHhPSFXVoDfDEE4WifeEtBPk3QCE8wBtvgOjGgCTq5iwbvLgPSEbcWcVEublgzCKCOs+Nx+AUUA4Z2+/N6NgPKYTVlfxPRirywmnC/F2pa4daYT1eGUD7tJj2nBMIry0gx4Yk7pqAmF3C96uBMuDT3jZDOpSQjNyCTtzI98mwx2NTMLhzgbcpYeMhHMGE4IvbVnrP4fwzinmLM6EwyAsoIe+pJcchJfssqnSPZxwHu+G+tBIHYxEwvpuIIeIywaNsC2ph76kafMNiXAqEXBFJJkbFMKlTEDilEogLBaQhhgnLGgZ/BZhCxclLBqQghgjLLiL7op21AhhobPoUbEZNUz4A4BRxCBh9wuAsaU/RFj/BqAKb+BChHe/N0NphPbu12bIphD26Ld4hJXswh84+u1FLyF2IdRbmMXSdnU913XXLlvABvYB3mXRR4icRrVqpu+5oJ5QkQ37Q3wTqodwBj668U/mHdK97DH6PYSoWUabmA03GRSkZ7ZxE4K223E+JKNnE+4kxAxCTT7ymzAD0j0UnYSQswndEPk2YcajoRI2iKcpXuBWC3mm66M6CBGONR3YZLg1IyY37fisDkLEk1JOayEnyxTCSv4YzrHCQYht1Pen/SIEmEw0P6ZDAINbf22evgjl5xPJgBDEMUYof0ZiF90l76hf3/eTUPoASfTSJsB0EyaUTzPsZeJD8kXj4xOfCWf4F+RL/Ab6bGSc30i8myGeeIUk3xSfdzYnQvlKIRuEu8Qj5bxinAjlrhkAIKCfnpw2x3cSN6FgJTxKvGKdGvFIKG5C6Tz6kng+PTbigVDehKhMF7F1c2zEA6F4Iv3aMCVLvHU8TKdvQvFaCBqFm+Qj8b0mvgkH4Y+CJtLna0n19kq9X6uItfAl+fb0mxA7RUsFXLj+CMUztNPRlSyxu+9v5XoRyj8aspMCuulfl1KwX8Qm8Ir3339f/EUo/L0vm0UqnB33/FPuI0Xt2F4SL/qvHdaTUO7m5vjwKYK90ZNQ3ick/ieXFvEb6SOhvJPCdt0vwV5pJ5R3CfBUCjnhaw6E4h/D7mg2IXzvb0LA9wIvFpDlYu9XD0KAG1aDARGT377oPwgBR3clEu5r9EYI6BBlEj6GzkaIiCItcRzuJtRGiDi3L5LwsV5shIjQixJXi91mVaCvVeCeRu09S6GSmsrbl6r9uytIaALcxEfl/FcPQkyUHto+hL2Vgiw8Cr8gwt5KYSaa8vw0z7eaV0JU9iQzTT4iuQf+ofW7K8ykpZDnMptQIbzLSoiJRATvakBDZ9vVKFxaBXJFRHWsdTJVmHDZTchuCsuNNysh6reQsykwF+KfAqZv0escxITL19G1An4umH0B/Oq6U8iiXahGRKZcTQo2aynYSIQmdi4KmquN2X4ji4zoQUFsp7/fQ6yJ2Ky5SqG2NLsAGxvYdmZXo8CJlPJ+Ci6E0yt0LqzU1oeOmlUWTiiMjIJXALAKXh1JtGTgKwBYha+hJ9jaZKgAYDIQpiPmKHGQqQpiWkfNVKQiC2OSBzxPmZEsvVQlOYgzlX01+Ll0F7N8Y76ikyN8PXyLszDmK7yMX/Hf0pY6p9YZq4Za9L70JFql8byVz3uwbfEhHa8Yn7syf4O1Dx0KX1OR42KMsyqsje+U1r2jtMnaessFJVFXGx/ppwk8SPWHm6u2m676TNd+fGqB+trCehQXMsYo7yVeOTQh/aUlSndIn3eJ0jXw3KJMIc+eipRBnh8WKQs8Ay5TDfAcv0wtwFiMIqVbXDxNmXrE04Cij8qUBsa1lSmLi00sVBUwvrRIPeNL/8dTzTNG+H+8b3vGeSN2NTqH5K/1itWXudO1Gvsqj/pR5gj4y7dIH4ju6rJI1YugUu1fzkzqiqgtOgXBrWSH3F/eU9qhiO7ztt5RadeBHnLXEnw12sIv0A6qS2jHQ/4h35PBvfwMIH5HO+SQ8teLaxtwF/tStGMeMHPjRr5NCivmrVqnXG6eBYVOj6GLNemf8vFZ3RRbpoUnzgbzXFOB003v6aK7GLXiP+pi0GdTeGkBnhgL24vs+Sd5LkZn4XFFtde/6tNQjy+wuT8pIk6oXzWGiNPUzX10E7GfftWJIppQuJSKdJFiKxy1vkhLYgFNSGzEd8Inr+befWv9UZQB5aq5R7GDcZURJSKctDjrJhL2NfDCCWkitIWz9iVhwSijkxK6qad+aXSSgufcpyq6PfHUoI02IrwyRKpiu2hvHeFYI8Kre6Qq1hTeWtCx/1nIRBOdagL1vGPT6aUYIYVfM1CTPfJx7jR9zwoawsG6+mHb5EcIg3cjhNv/Rwg//i3njpKfIIzeURIyMH+CMHrPTGjF+AVCwl1BgcnmFwgJ9z0FJptfIPz+t5x718onJN675t3ZlE9IvDvP+wPFE5LvP/T5ekonZNxh6bmHtHBCzj2kPj8BunJgspxvx7pL1nPGc8PZtlPuTsq7D9gzFItAnN19lHmns6/CSAHOqNrdvdj3cvucNqw7cHPIE6+QcLe61yvJTGEGy2PdBTy5AULvifKNLjefpzTw1UPeJZ8hBbzYiSlP8FfQzRn0n/nOsW4ajL6QofCZX9hD6PVp3DEYffWjIl0q4gP1Il7u4fcWXYiNmZiX11t46+Ke6r2ZPFpeLOrH9uZ6a+bt6RL5ixLEd1lxT70/nZ1WMgGgyRsITdhGEs4i/BXi9CXH3oGqGZQKeJTTloCXWI/ZozMCx6GkhZl0nhRyhGcO9w6VGKTN57QTs2AIS8bhOJnQg2ndh3gm6DZZXoi6ysIY5qNuj8mnnsGAOUKVFraWMB85LoR+rhtJedA9cnmcq3CmjKYH2DFOrmN1XrRZQJ21jSWQcLwpnLP5eMgcoiHrSPMpZgAhK/qAUHJMq0YCWQ9j/BE8w4YZX0GpSLRBJnXXbqCk/nD9fdwIko6UD6C1HXibnW4hFh0y3E0UP0aGWptL67EiJSfWbWWpCaMJNltCFBAn/2jF3ApEuUHnbhoay0mHZTdgGiE3jUw/soSN7ZumGoahqqqm6a3hp/qmuaPTIrlSywA+/ldiCjO9SCGCMGcpR59STdH0aLxM9UbdEpyXCOIN81Z0PPFJ7DNRRGVaAjKbT2ZjC2NG8zOKfQjiqNi81TkBdicg7nceMhV51GoAmGOYyOYcZUjDhU/pQsVuE6w6Fp6qUG4RYHR6K6jR8YEnsjE/hI2/3yBllBqL9w9NuKqjm0IOPFvBfeg5cijmqTFsytX6aKYcbtdcWSJzO/RU62j9d/2Q5vggKGsezNwtjX3UDfaRKWObpct6SHdFpk/dtctQrVavHY1Rxox2tYarYWk9tj9W/wHyKYDIdACaHQAAAABJRU5ErkJggg=="
 
 
     const [user, setUser] = useState({})
-    const [likes, setLikes] = useState(0)
     const [userLikedPost, setUserLikedPost] = useState(false)
+    const [profileLoad, setProfileLoad] = useState(false);
+    const [imageLoad, setImageLoad] = useState(false);
 
     useEffect(() => {
+        console.log("indivdual props", props)
         database().ref(`users/${item.userID}`).on("value", data => {
             setUser(data.val())
             let likesCount = data.val()?.posts[item.key]?.likes
             if (likesCount) {
-                let count = Object.keys(likesCount).length
-                if (count > 0) {
-                    console.log("likesCount", count)
-                    setLikes(count)
-                }
-                else {
-                    console.log("likesCount", count)
-                    setLikes(0)
-                }
                 let findLiker = Object.keys(likesCount).find(likerKey => likerKey === currentUserUID)
                 if (findLiker) {
-                    // console.log("findLiker", findLiker)
                     setUserLikedPost(true)
                 }
                 else {
@@ -41,30 +34,25 @@ const IndividualPost = ({ item }) => {
                 }
             }
         })
+        return () => console.log("Clear")
     }, [])
 
     const findLikes = () => {
-        database().ref(`users/${item.userID}/posts`).on("value", snap => {
-            if (snap.val()?.posts) {
-                let post = snap.val()?.posts[item.key]
-                if (post?.likes) {
-                    console.log("postsLikes", Object.keys(posts.likes).length)
-                }
-            }
-        })
+        if (new Object(item).hasOwnProperty("likes")) {
+            let likesCount = Object.keys(item?.likes).length
+            if (likesCount === 1) return likesCount + " Like"
+            else return likesCount + " Likes"
+        }
+        else {
+            return 0 + " Likes"
+        }
     }
 
-
-    const handleSubmit = () => {
-        database().ref(`users/${item.userID}`).on("value", data => {
-            console.log("individual", data.val())
-        })
-    }
 
     const handleDelete = (key) => {
-        const deletePost = () => {
-            database().ref(`users/${item.userID}/posts/${key}`).remove().then(_ => console.log("Deleted Succefully"))
-            storage().ref(`usersProfile/${item.userID}/posts`).child(key).delete()
+        const deletePost = async () => {
+            await database().ref(`users/${item.userID}/posts/${key}`).remove()
+            await storage().ref(`usersProfile/${item.userID}/posts`).child(key).delete()
                 .then(_ => console.log("Deleted File from storage succefuully")).
                 catch(err => console.log("stoarge err"))
         }
@@ -74,7 +62,6 @@ const IndividualPost = ({ item }) => {
             [
                 {
                     text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
                     style: "cancel"
                 },
                 { text: "OK", onPress: () => deletePost() }
@@ -86,19 +73,16 @@ const IndividualPost = ({ item }) => {
     const handleLike = async () => {
 
         if (userLikedPost) {
-            await database().ref(`users/${item.userID}/posts/${item.key}/likes`).child(currentUserUID).remove().then(_ => console.log("removed like successfully"))
+            await database().ref(`users/${item.userID}/posts/${item.key}/likes`).child(currentUserUID).remove()
             setUserLikedPost(false)
         }
 
         else {
-            database().ref(`users/${item.userID}/posts/${item.key}/likes`).child(currentUserUID).set({
+            await database().ref(`users/${item.userID}/posts/${item.key}/likes`).child(currentUserUID).set({
                 LikerID: currentUserUID
             }, err => {
                 if (err) {
                     console.log(err)
-                }
-                else {
-                    console.log("successfully Liked")
                 }
             })
         }
@@ -109,11 +93,21 @@ const IndividualPost = ({ item }) => {
 
     return (
         <View style={{ flex: 0, margin: 10 }}>
-            <Card style={styles.card}>
+            <Card style={styles.card} onTouchEnd={() => findLikes()}>
                 <CardItem >
                     <Left>
-                        <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }} />
-                        <View></View>
+                        <View>
+                            <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }}
+                                onLoadStart={() => {
+                                    // console.log("image load true")
+                                    return setProfileLoad(true)
+                                }}
+                                onLoadEnd={_ => {
+                                    setProfileLoad(false)
+                                }}
+                            />
+                            {profileLoad && <LoadingView />}
+                        </View>
                         <Body style={{
                             // borderWidth: 1,
                             // borderColor: "red"
@@ -132,21 +126,43 @@ const IndividualPost = ({ item }) => {
                         </View>
                         {item.picURL && <View style={{ position: "relative", width: "100%", height: 200, borderRadius: 4, borderWidth: 0.5, borderColor: "grey" }}>
                             <Image source={{ uri: item.picURL }}
-                                style={{ height: "100%", width: "100%", position: "absolute", borderRadius: 4 }} />
+                                style={{ height: "100%", width: "100%", position: "absolute", borderRadius: 4 }}
+                                onLoadStart={() => {
+                                    // console.log("image load true")
+                                    return setImageLoad(true)
+                                }}
+                                onLoadEnd={_ => {
+                                    setImageLoad(false)
+                                }}
+                            />
+                            {imageLoad && <LoadingView postPic />}
                         </View>}
                     </View>
                 </CardItem>
-                <CardItem cardBody style={{ marginHorizontal: 10, paddingHorizontal: 20 }}>
+                <CardItem cardBody style={{ marginHorizontal: 10, paddingHorizontal: 20, marginVertical: 5 }}>
                     <Left>
-                        <Button transparent textStyle={{ color: "green" }}>
-                            <Icon onPress={_ => handleLike()} name="thumbs-up" size={14} color={userLikedPost ? "green" : "black"} />
-                            <Text style={{ color: userLikedPost ? "green" : "black" }}>{likes} Likes</Text>
+                        <Button onPress={_ => handleLike()} transparent
+                            style={{
+                                borderRadius: 10, paddingRight: 0, paddingLeft: 10,
+                                borderColor: MyColors.green, backgroundColor: "#e8f5e9c7",
+                            }}
+                        >
+                            <Icon name="thumbs-up" size={14} color={userLikedPost ? "green" : "black"} />
+                            <Text style={{
+                                color: userLikedPost ? MyColors.green : "black",
+                                fontWeight: userLikedPost ? "700" : "400",
+                                fontSize: 12, textAlign: "center"
+                            }}>{findLikes()}</Text>
                         </Button>
                     </Left>
                     <Right>
-                        <Button transparent textStyle={{ color: MyColors.primaryText }}>
-                            <Icon name="comment" size={14} />
-                            <Text>20 comments</Text>
+                        <Button onPress={() => navigation.navigate(mypost ? "mycomments" : "comments", { item })} transparent
+                            style={{
+                                borderRadius: 10, paddingRight: 0, paddingLeft: 10,
+                                borderColor: MyColors.green, backgroundColor: "#e8f5e9c7"
+                            }}>
+                            <Icon name="comments" size={15} color={"green"} />
+                            <Text style={{ color: MyColors.green, fontSize: 12, textAlign: "center" }}>20 comments</Text>
                         </Button>
                     </Right>
                 </CardItem>
