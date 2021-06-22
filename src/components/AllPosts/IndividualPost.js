@@ -14,13 +14,45 @@ const IndividualPost = ({ item }) => {
 
 
     const [user, setUser] = useState({})
+    const [likes, setLikes] = useState(0)
+    const [userLikedPost, setUserLikedPost] = useState(false)
 
     useEffect(() => {
         database().ref(`users/${item.userID}`).on("value", data => {
-            // console.log("individual", data.val())
             setUser(data.val())
+            let likesCount = data.val()?.posts[item.key]?.likes
+            if (likesCount) {
+                let count = Object.keys(likesCount).length
+                if (count > 0) {
+                    console.log("likesCount", count)
+                    setLikes(count)
+                }
+                else {
+                    console.log("likesCount", count)
+                    setLikes(0)
+                }
+                let findLiker = Object.keys(likesCount).find(likerKey => likerKey === currentUserUID)
+                if (findLiker) {
+                    // console.log("findLiker", findLiker)
+                    setUserLikedPost(true)
+                }
+                else {
+                    setUserLikedPost(false)
+                }
+            }
         })
-    }, [item])
+    }, [])
+
+    const findLikes = () => {
+        database().ref(`users/${item.userID}/posts`).on("value", snap => {
+            if (snap.val()?.posts) {
+                let post = snap.val()?.posts[item.key]
+                if (post?.likes) {
+                    console.log("postsLikes", Object.keys(posts.likes).length)
+                }
+            }
+        })
+    }
 
 
     const handleSubmit = () => {
@@ -28,6 +60,7 @@ const IndividualPost = ({ item }) => {
             console.log("individual", data.val())
         })
     }
+
     const handleDelete = (key) => {
         const deletePost = () => {
             database().ref(`users/${item.userID}/posts/${key}`).remove().then(_ => console.log("Deleted Succefully"))
@@ -50,12 +83,34 @@ const IndividualPost = ({ item }) => {
 
     }
 
+    const handleLike = async () => {
+
+        if (userLikedPost) {
+            await database().ref(`users/${item.userID}/posts/${item.key}/likes`).child(currentUserUID).remove().then(_ => console.log("removed like successfully"))
+            setUserLikedPost(false)
+        }
+
+        else {
+            database().ref(`users/${item.userID}/posts/${item.key}/likes`).child(currentUserUID).set({
+                LikerID: currentUserUID
+            }, err => {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    console.log("successfully Liked")
+                }
+            })
+        }
+
+    }
+
     const { photoURL, firstname, lastname } = user
 
     return (
         <View style={{ flex: 0, margin: 10 }}>
             <Card style={styles.card}>
-                <CardItem>
+                <CardItem >
                     <Left>
                         <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }} />
                         <View></View>
@@ -70,22 +125,22 @@ const IndividualPost = ({ item }) => {
                             <Icon onPress={() => handleDelete(item.key)} name="ellipsis-v" size={20} color="#66BB6A" />}
                     </Left>
                 </CardItem>
-                <CardItem>
-                    <Body style={{ position: "relative" }}>
-                        <View style={{ paddingVertical: 10, paddingLeft: 4 }}>
-                            <Text>{item.title}</Text>
+                <CardItem >
+                    <View style={{ position: "relative", width: "100%" }}>
+                        <View style={{ flex: 1, paddingVertical: 10, paddingLeft: 4, borderBottomWidth: !item.picURL ? 1 : 0, borderColor: "#dcdfe2" }}>
+                            <Text style={{}}>{item.title} sbdlKD  LKSBDLKAsdnlK ;LsnndoNSOIN</Text>
                         </View>
                         {item.picURL && <View style={{ position: "relative", width: "100%", height: 200, borderRadius: 4, borderWidth: 0.5, borderColor: "grey" }}>
                             <Image source={{ uri: item.picURL }}
                                 style={{ height: "100%", width: "100%", position: "absolute", borderRadius: 4 }} />
                         </View>}
-                    </Body>
+                    </View>
                 </CardItem>
-                <CardItem style={{ marginHorizontal: 10 }}>
+                <CardItem cardBody style={{ marginHorizontal: 10, paddingHorizontal: 20 }}>
                     <Left>
-                        <Button transparent textStyle={{ color: MyColors.primaryText }}>
-                            <Icon name="star" size={14} />
-                            <Text>100 Likes</Text>
+                        <Button transparent textStyle={{ color: "green" }}>
+                            <Icon onPress={_ => handleLike()} name="thumbs-up" size={14} color={userLikedPost ? "green" : "black"} />
+                            <Text style={{ color: userLikedPost ? "green" : "black" }}>{likes} Likes</Text>
                         </Button>
                     </Left>
                     <Right>
