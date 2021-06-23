@@ -67,7 +67,6 @@ const SignIn = ({ navigation }) => {
   };
 
   const onsubmit = () => {
-    console.log('signin Submit', todoState);
     let { email, password } = state;
 
     if (!email) {

@@ -20,7 +20,7 @@ const IndividualPost = (props) => {
     const [imageLoad, setImageLoad] = useState(false);
 
     useEffect(() => {
-        console.log("indivdual props", props)
+        // console.log("indivdual props", props)
         database().ref(`users/${item.userID}`).on("value", data => {
             setUser(data.val())
             let likesCount = data.val()?.posts[item.key]?.likes
@@ -45,6 +45,16 @@ const IndividualPost = (props) => {
         }
         else {
             return 0 + " Likes"
+        }
+    }
+    const findComments = () => {
+        if (new Object(item).hasOwnProperty("comments")) {
+            let commentCount = Object.keys(item?.comments).length
+            if (commentCount === 1) return commentCount + " comment"
+            else return commentCount + " comments"
+        }
+        else {
+            return 0 + " comments"
         }
     }
 
@@ -112,7 +122,7 @@ const IndividualPost = (props) => {
                             // borderWidth: 1,
                             // borderColor: "red"
                         }}>
-                            <Text>{user.firstname + " " + user.lastname}</Text>
+                            <Text>{firstname + " " + lastname}</Text>
                             <Text note>{new Date(item.createdAt).toLocaleDateString() + " " + new Date(item.createdAt).toLocaleTimeString()}</Text>
                         </Body>
                         {item.userID === currentUserUID &&
@@ -122,7 +132,7 @@ const IndividualPost = (props) => {
                 <CardItem >
                     <View style={{ position: "relative", width: "100%" }}>
                         <View style={{ flex: 1, paddingVertical: 10, paddingLeft: 4, borderBottomWidth: !item.picURL ? 1 : 0, borderColor: "#dcdfe2" }}>
-                            <Text style={{}}>{item.title} sbdlKD  LKSBDLKAsdnlK ;LsnndoNSOIN</Text>
+                            <Text style={{}}>{item.title}</Text>
                         </View>
                         {item.picURL && <View style={{ position: "relative", width: "100%", height: 200, borderRadius: 4, borderWidth: 0.5, borderColor: "grey" }}>
                             <Image source={{ uri: item.picURL }}
@@ -156,13 +166,13 @@ const IndividualPost = (props) => {
                         </Button>
                     </Left>
                     <Right>
-                        <Button onPress={() => navigation.navigate(mypost ? "mycomments" : "comments", { item })} transparent
+                        <Button onPress={() => navigation.navigate(mypost ? "mycomments" : "comments", { item, user })} transparent
                             style={{
                                 borderRadius: 10, paddingRight: 0, paddingLeft: 10,
                                 borderColor: MyColors.green, backgroundColor: "#e8f5e9c7"
                             }}>
                             <Icon name="comments" size={15} color={"green"} />
-                            <Text style={{ color: MyColors.green, fontSize: 12, textAlign: "center" }}>20 comments</Text>
+                            <Text style={{ color: MyColors.green, fontSize: 12, textAlign: "center" }}>{findComments()}</Text>
                         </Button>
                     </Right>
                 </CardItem>

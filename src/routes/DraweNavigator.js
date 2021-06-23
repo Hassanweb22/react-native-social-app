@@ -54,7 +54,6 @@ export default function MyDrawerNavigator() {
               size={25}
               color={'#fff'}
               onPress={() => {
-                console.log("currentRoue name", route)
                 navigation.openDrawer()
               }}
             />

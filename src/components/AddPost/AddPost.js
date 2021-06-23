@@ -104,7 +104,7 @@ const TodoForm = ({ navigation, todos }) => {
           })
           setState({ ...state, photoURL: downloadURL })
         }).catch(err => console.log(err));
-        setState({ ...state, photo: null })
+        setState({ ...state, photo: null, title: "" })
         setProgress(0)
       },
     );
@@ -127,11 +127,12 @@ const TodoForm = ({ navigation, todos }) => {
           if (err) {
             return console.log('error', err);
           }
+          else {
+            setState(initialState);
+          }
           // console.log('posts submitted');
-          setState(initialState);
         });
     }
-    setState(initialState)
   };
 
   const validate = () => {

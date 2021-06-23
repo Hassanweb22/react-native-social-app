@@ -9,6 +9,8 @@ import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Auth from "@react-native-firebase/auth"
 import { useDispatch } from "react-redux"
+import { loginUser } from '../store/actions/actions';
+
 
 function StackPosts() {
     const dispatch = useDispatch()
@@ -52,23 +54,12 @@ function StackPosts() {
                         />
                     );
                 }
-            })} name="AllPosts" component={AllPosts} />
+            })}
+                name="AllPosts" component={AllPosts}
+            />
             <Stack.Screen options={({ route, navigation }) => ({
                 headerRight: () => {
-                    return (
-                        <TouchableOpacity style={styles.addButton}>
-                            <Text style={{ color: "#fff" }}>Add</Text>
-                            <Icon
-                                style={{ marginLeft: 10 }}
-                                name="comment"
-                                size={25}
-                                color={'#fff'}
-                                onPress={() => {
-                                    navigation.openDrawer()
-                                }}
-                            />
-                        </TouchableOpacity>
-                    );
+                    return null
                 }
             })} name="comments" component={Comments} />
         </Stack.Navigator>
