@@ -43,6 +43,9 @@
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>EvilIcons.ttf</string>
+		<string>Entypo.ttf</string>
+		<string>Ionicons.ttf</string>
 		<string>FontAwesome5_Solid.ttf</string>
 		<string>FontAwesome5_Brands.ttf</string>
 		<string>FontAwesome5_Regular.ttf</string>

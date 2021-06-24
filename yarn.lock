@@ -5758,6 +5758,13 @@
   "resolved" "https://registry.npmjs.org/react-native-screens/-/react-native-screens-3.3.0.tgz"
   "version" "3.3.0"
 
+"react-native-toast-message@^1.4.9":
+  "integrity" "sha512-QhHzzsiymKpHEWz2nUKQjQMRuGN+/a8cOwDXJcz3TQFY03p20f6sJW9JKw3KkMfvWiUhGbApCPpNU6tHaAZ32w=="
+  "resolved" "https://registry.npmjs.org/react-native-toast-message/-/react-native-toast-message-1.4.9.tgz"
+  "version" "1.4.9"
+  dependencies:
+    "prop-types" "^15.7.2"
+
 "react-native-vector-icons@^7.0.0", "react-native-vector-icons@^7.1.0":
   "integrity" "sha512-V2a1zJ4i+kS8O4j183gIwX14St9AxxXabxwYpFBgRhvr2NDXyFcjHDEAgrOYYlt2W57e20aN1tBDU/I+wn9WtQ=="
   "resolved" "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-7.1.0.tgz"

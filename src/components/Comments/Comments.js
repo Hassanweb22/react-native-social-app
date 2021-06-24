@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View, Image, ActivityIndicator } from 'react-native'
 import { Body, Button, Card, CardItem, Container, Content, Form, Input, Item, Label, Text } from "native-base"
 import IndividualComments from './IndividualComments'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -21,6 +21,7 @@ const Comments = ({ route }) => {
 
     const [state, setState] = useState(initialState);
     const [allComments, setAllComments] = useState({});
+    const [isLoading, setisLoading] = useState(true);
     const [progress, setProgress] = useState(0);
     const [errors, setError] = useState(initialError);
 
@@ -30,6 +31,11 @@ const Comments = ({ route }) => {
             if (snap.exists()) {
                 console.log(snap.val())
                 setAllComments(snap.val())
+                setisLoading(false)
+            }
+            else {
+                setisLoading(false)
+                setAllComments({})
             }
         })
         return () => console.log("clenaup comments")
@@ -44,7 +50,7 @@ const Comments = ({ route }) => {
             let comKey = database().ref(`users/${item.userID}/posts/${item.key}/comments`).push().key
             let time = new Date()
             let obj = { comment: state.comment, comKey, postID: item.key, createdAt: time, commentBy: currentUserUID }
-            console.log("obj", obj)
+            // console.log("obj", obj)
             database().ref(`users/${item.userID}/posts/${item.key}/comments`).child(comKey).set(obj, err => {
                 if (err) {
                     return console.log('error', err);
@@ -55,12 +61,31 @@ const Comments = ({ route }) => {
         }
     }
 
+    const showData = () => {
+        if (isLoading) return true
+    }
+
     return (
         <Container>
             <ScrollView>
-                {!!Object.keys(allComments).length ? Object.keys(allComments).map(key => {
-                    return <IndividualComments key={key} comment={allComments[key]} post={item} />
-                }) : <Text> No comments</Text>}
+                {isLoading ?
+                    <View style={{
+                        flex: 1, position: "relative",
+                        height: Dimensions.get("screen").height - 170, justifyContent: "center", alignItems: "center"
+                    }}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    </View> :
+                    !!Object.keys(allComments).length ? Object.keys(allComments).map(key => {
+                        return <IndividualComments key={key} comment={allComments[key]} post={item} />
+                    }) :
+                        <View style={{
+                            flex: 1, position: "relative",
+                            height: Dimensions.get("screen").height - 170, justifyContent: "center", alignItems: "center"
+                        }}>
+                            <Text style={{ fontWeight: "bold" }}>No Comments Add One</Text>
+                            {/* <ActivityIndicator size="large" color="#0000ff" /> */}
+                        </View>
+                }
             </ScrollView>
             <CardItem cardBody style={styles.addComment}>
                 <Form style={{ borderWidth: 0, width: "100%" }}>
@@ -106,9 +131,16 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.green,
         borderRadius: 30,
-        marginVertical: 10,
+        marginVertical: 15,
         marginHorizontal: 10,
-        elevation: 10
+        elevation: 10,
+        shadowOffset: {
+            width: 0,
+            height: -2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        // shadowColor: colors.green
     }
 
 })

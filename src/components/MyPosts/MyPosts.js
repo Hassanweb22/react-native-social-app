@@ -22,6 +22,7 @@ import {
     StatusBar,
     FlatList,
     Dimensions,
+    ActivityIndicator,
 } from 'react-native';
 
 import { View, StyleSheet } from 'react-native';
@@ -38,6 +39,8 @@ const Posts = ({ navigation }) => {
     const currentUserUID = useSelector(state => state.todo.loginUser.uid);
 
     const [posts, setPosts] = useState([]);
+    const [isLoading, setisLoading] = useState(true);
+
 
     useEffect(() => {
         let uid = loginUser.uid;
@@ -45,18 +48,23 @@ const Posts = ({ navigation }) => {
             database()
                 .ref(`users/${uid}`)
                 .on('value', snap => {
-                    let temp = []
                     if (snap.exists()) {
+                        let temp = []
                         if (snap.val()?.posts) {
                             let userPost = snap.val().posts
                             Object.keys(userPost).map(postKey => temp.push(userPost[postKey]))
+                            console.log('My posts', temp);
+                            setPosts(temp)
                         }
                         else {
                             console.log(snap.val().fisrtname, "has no post",)
+                            setPosts([])
                         }
+                        setisLoading(false)
 
-                        console.log('My posts', temp);
-                        setPosts(temp)
+                    } else {
+                        setisLoading(false)
+                        setPosts([])
                     }
                 });
         };
@@ -71,12 +79,16 @@ const Posts = ({ navigation }) => {
     return (
         <Container style={styles.container} >
             <ScrollView>
-                {posts.length > 0 ? posts.map(item => {
-                    return <IndividualPost mypost navigation={navigation} key={item.key} postID={item.key} item={item} />
-                }) :
+                {isLoading ?
                     <Container style={{ borderColor: "red", flex: 1, alignItems: "center", justifyContent: "flex-end", height: Dimensions.get("window").width }}>
-                        <Text style={{ fontWeight: "bold" }}>You Have No Posts</Text>
-                    </Container>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    </Container> :
+                    !!posts.length ? posts.map(item => {
+                        return <IndividualPost mypost navigation={navigation} key={item.key} postID={item.key} item={item} />
+                    }) :
+                        <Container style={{ borderColor: "red", flex: 1, alignItems: "center", justifyContent: "flex-end", height: Dimensions.get("window").width }}>
+                            <Text style={{ fontWeight: "bold" }}>You Have No Posts</Text>
+                        </Container>
                 }
             </ScrollView>
         </Container>

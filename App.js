@@ -31,6 +31,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store/store';
 import { loginUser } from './src/store/actions/actions';
 import MyDrawerNavigator from './src/routes/DraweNavigator';
+import Toast, { BaseToast } from 'react-native-toast-message';
 
 const App = () => {
   const initialState = {
@@ -109,19 +110,42 @@ const App = () => {
 
   const { width, height } = Dimensions.get('screen');
 
+  const toastConfig = {
+    /* 
+      overwrite 'success' type, 
+      modifying the existing `BaseToast` component
+    */
+    success: ({ text1, props, ...rest }) => (
+      <BaseToast
+        {...rest}
+        style={{ borderLeftColor: 'red' }}
+        contentContainerStyle={{ paddingHorizontal: 15 }}
+        text1Style={{
+          fontSize: 15,
+          fontWeight: '400'
+        }}
+        text1={text1}
+        text2={props.uuid}
+      />
+    ),
+  };
+
+
   return (
     // <Child />
-
-    <Provider store={store}>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-      <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaProvider>
-          <NavigationContainer>
-            {state.login ? <MyDrawerNavigator /> : <MyStackSigninNavigator />}
-          </NavigationContainer>
-        </SafeAreaProvider>
-      </PersistGate>
-    </Provider>
+    <>
+      <Provider store={store}>
+        <StatusBar barStyle="dark-content" backgroundColor="transparent" />
+        <PersistGate loading={null} persistor={persistor}>
+          <SafeAreaProvider>
+            <NavigationContainer>
+              {state.login ? <MyDrawerNavigator /> : <MyStackSigninNavigator />}
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </PersistGate>
+      </Provider>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
+    </>
   );
 };
 

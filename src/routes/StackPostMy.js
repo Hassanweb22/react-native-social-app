@@ -9,6 +9,7 @@ import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Auth from "@react-native-firebase/auth"
 import { useDispatch } from "react-redux"
+import { loginUser } from '../store/actions/actions';
 
 function StackPosts() {
     const dispatch = useDispatch()

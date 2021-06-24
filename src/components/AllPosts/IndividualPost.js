@@ -7,6 +7,7 @@ import database from '@react-native-firebase/database'
 import storage from '@react-native-firebase/storage'
 import LoadingView from '../UpdateProfile/LoadingView'
 import { useSelector } from 'react-redux'
+import Toast, { BaseToast } from 'react-native-toast-message';
 
 const IndividualPost = (props) => {
     const { item, navigation, mypost } = props
@@ -18,23 +19,18 @@ const IndividualPost = (props) => {
     const [userLikedPost, setUserLikedPost] = useState(false)
     const [profileLoad, setProfileLoad] = useState(false);
     const [imageLoad, setImageLoad] = useState(false);
+    const [actions, setActions] = useState(false);
 
     useEffect(() => {
-        // console.log("indivdual props", props)
-        database().ref(`users/${item.userID}`).on("value", data => {
-            setUser(data.val())
-            let likesCount = data.val()?.posts[item.key]?.likes
-            if (likesCount) {
-                let findLiker = Object.keys(likesCount).find(likerKey => likerKey === currentUserUID)
-                if (findLiker) {
-                    setUserLikedPost(true)
+        const datafunc = () => {
+            database().ref(`users/${item?.userID}`).on("value", data => {
+                if (data.exists()) {
+                    setUser(data.val())
                 }
-                else {
-                    setUserLikedPost(false)
-                }
-            }
-        })
-        return () => console.log("Clear")
+            })
+        }
+        datafunc()
+        return () => setUser({})
     }, [])
 
     const findLikes = () => {
@@ -61,10 +57,20 @@ const IndividualPost = (props) => {
 
     const handleDelete = (key) => {
         const deletePost = async () => {
-            await database().ref(`users/${item.userID}/posts/${key}`).remove()
-            await storage().ref(`usersProfile/${item.userID}/posts`).child(key).delete()
-                .then(_ => console.log("Deleted File from storage succefuully")).
-                catch(err => console.log("stoarge err"))
+            await database().ref(`users/${item.userID}/posts/${item.key}`).remove().then(async () => {
+                Toast.show({
+                    type: "success",
+                    position: "top",
+                    topOffset: 40,
+                    text1: 'Delete',
+                    text2: 'Your Post has been Deleted 👍 '
+                });
+                await storage().ref(`usersProfile/${item.userID}/posts`).child(key).delete()
+                    .then(_ => {
+                        console.log("Deleted File from storage succefuully")
+                    }).
+                    catch(err => console.log("stoarge err", err))
+            }).catch(err => console.log(err))
         }
         Alert.alert(
             "Delete",
@@ -77,6 +83,7 @@ const IndividualPost = (props) => {
                 { text: "OK", onPress: () => deletePost() }
             ]
         );
+
 
     }
 
@@ -92,8 +99,9 @@ const IndividualPost = (props) => {
                 LikerID: currentUserUID
             }, err => {
                 if (err) {
-                    console.log(err)
+                    return console.log(err)
                 }
+                else setUserLikedPost(true)
             })
         }
 
@@ -103,9 +111,9 @@ const IndividualPost = (props) => {
 
     return (
         <View style={{ flex: 0, margin: 10 }}>
-            <Card style={styles.card} onTouchEnd={() => findLikes()}>
+            <Card style={styles.card} onTouchEnd={() => actions && setActions(false)}>
                 <CardItem >
-                    <Left>
+                    <Left style={{ borderWidth: 1, borderColor: "transparent" }}>
                         <View>
                             <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }}
                                 onLoadStart={() => {
@@ -123,11 +131,21 @@ const IndividualPost = (props) => {
                             // borderColor: "red"
                         }}>
                             <Text>{firstname + " " + lastname}</Text>
-                            <Text note>{new Date(item.createdAt).toLocaleDateString() + " " + new Date(item.createdAt).toLocaleTimeString()}</Text>
+                            <Text note style={{ fontSize: 12 }}>{new Date(item.createdAt).toLocaleDateString() + " " + new Date(item.createdAt).toLocaleTimeString()}</Text>
                         </Body>
-                        {item.userID === currentUserUID &&
-                            <Icon onPress={() => handleDelete(item.key)} name="ellipsis-v" size={20} color="#66BB6A" />}
+                        {(item.userID === currentUserUID && !actions) &&
+                            <Icon onPress={() => setActions(true)} name="ellipsis-v" size={20} color="#66BB6A" />}
                     </Left>
+                    {actions &&
+                        <Right style={{
+                            borderWidth: 1, borderColor: "red", flex: 0.55, flexDirection: "row", justifyContent: "space-around",
+                            borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5,
+                            borderColor: MyColors.green, backgroundColor: "#e8f5e9c7",
+                        }}>
+                            <Icon onPress={() => console.log("edit")} name="edit" size={25} color="#66BB6A" />
+                            <Icon onPress={() => handleDelete(item.key)} name="trash" size={25} color="#F44337" />
+                        </Right>
+                    }
                 </CardItem>
                 <CardItem >
                     <View style={{ position: "relative", width: "100%" }}>
