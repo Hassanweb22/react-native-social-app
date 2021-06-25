@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AllPosts from '../components/AllPosts/AllPosts';
 import IndividualPost from '../components/AllPosts/IndividualPost';
 import Comments from '../components/Comments/Comments';
+import AddPost from '../components/AddPost/AddPost';
 import colors from '../colors/colors';
 import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -26,7 +27,7 @@ function StackPosts() {
                 return (
                     <Button transparent style={{ marginRight: 20 }}>
                         <Icon
-                            name="sign-out-alt"
+                            name="user"
                             size={25}
                             color={'#fff'}
                             onPress={() => {
@@ -62,6 +63,11 @@ function StackPosts() {
                     return null
                 }
             })} name="comments" component={Comments} />
+            <Stack.Screen options={({ route, navigation }) => ({
+                headerRight: () => {
+                    return null
+                }
+            })} name="AddPost" component={AddPost} />
         </Stack.Navigator>
     );
 }

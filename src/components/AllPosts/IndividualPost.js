@@ -62,6 +62,7 @@ const IndividualPost = (props) => {
                     type: "success",
                     position: "top",
                     topOffset: 40,
+                    visibilityTime: 2000,
                     text1: 'Delete',
                     text2: 'Your Post has been Deleted 👍 '
                 });

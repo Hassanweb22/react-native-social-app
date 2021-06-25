@@ -46,23 +46,17 @@ const Posts = ({ navigation }) => {
         let uid = loginUser.uid;
         const dataFunc = () => {
             database()
-                .ref(`users/${uid}`)
+                .ref(`users/${uid}/posts`)
                 .on('value', snap => {
+                    let temp = []
                     if (snap.exists()) {
-                        let temp = []
-                        if (snap.val()?.posts) {
-                            let userPost = snap.val().posts
-                            Object.keys(userPost).map(postKey => temp.push(userPost[postKey]))
-                            console.log('My posts', temp);
-                            setPosts(temp)
-                        }
-                        else {
-                            console.log(snap.val().fisrtname, "has no post",)
-                            setPosts([])
-                        }
+                        let userPost = snap.val()
+                        Object.keys(userPost).map(postKey => temp.push(userPost[postKey]))
+                        console.log('My posts', temp);
+                        setPosts(temp)
                         setisLoading(false)
-
                     } else {
+                        console.log("user has no post",)
                         setisLoading(false)
                         setPosts([])
                     }

@@ -16,6 +16,7 @@ import Auth from '@react-native-firebase/auth';
 import UpdateProfile from '../components/UpdateProfile/UpdateProfile';
 import StackPostsAll from './StackPostsAll';
 import StackPostMy from './StackPostMy';
+import DashboardAndProfileStack from "./DashboardAndProfileStack"
 
 export default function MyDrawerNavigator() {
   const Drawer = createDrawerNavigator();
@@ -37,7 +38,7 @@ export default function MyDrawerNavigator() {
 
       }}
       screenOptions={({ navigation, route }) => ({
-        headerShown: !(route.name === "Posts" || route.name === "MyPosts"),
+        headerShown: !(route.name === "Posts" || route.name === "MyPosts" || route.name === "Home"),
         headerStyle: {
           // borderWidth: 1,
           backgroundColor: MyColors.green,
@@ -78,14 +79,29 @@ export default function MyDrawerNavigator() {
         },
       })}>
       <Drawer.Screen
-        options={{
+        options={({ navigation }) => ({
           title: 'Dshboard',
           drawerIcon: ({ color, focused, size }) => (
             <Icon name="home" size={size} color={color} />
           ),
-        }}
+          headerRight: ({ }) => {
+            return (
+              <Button transparent style={{ marginRight: 20 }}>
+                <Icon
+                  name="user-circle"
+                  size={25}
+                  color={'#fff'}
+                  onPress={() => {
+                    console.log("Dashboard Header Right button")
+                    navigation.navigate("Profile")
+                  }}
+                />
+              </Button>
+            );
+          },
+        })}
         name="Home"
-        component={HomeScreen}
+        component={DashboardAndProfileStack}
       />
       <Drawer.Screen
         options={{
@@ -116,19 +132,6 @@ export default function MyDrawerNavigator() {
         }}
         name="Posts"
         component={StackPostsAll}
-      />
-      <Drawer.Screen
-        options={{
-          drawerIcon: ({ color, focused, size }) => (
-            <Icon name="scroll" size={19} color={color} />
-          ),
-          drawerLabel: 'Update Profile',
-          headerStyle: {
-            backgroundColor: MyColors.green,
-          },
-        }}
-        name="Update Profile"
-        component={UpdateProfile}
       />
     </Drawer.Navigator >
   );
