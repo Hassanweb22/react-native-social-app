@@ -61,6 +61,7 @@ const Posts = ({ navigation }) => {
                             }
                         })
                         setPosts(temp)
+                        console.log(temp, "allpost")
                         setisLoading(false)
                     }
                     else {

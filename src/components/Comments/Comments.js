@@ -6,8 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import colors from '../../colors/colors';
 import { useSelector } from 'react-redux';
 import database from "@react-native-firebase/database"
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-
+import moment from "moment"
 const Comments = ({ route }) => {
     const { item } = route.params
 
@@ -22,14 +21,12 @@ const Comments = ({ route }) => {
     const [state, setState] = useState(initialState);
     const [allComments, setAllComments] = useState({});
     const [isLoading, setisLoading] = useState(true);
-    const [progress, setProgress] = useState(0);
     const [errors, setError] = useState(initialError);
 
     useEffect(() => {
         console.log("Comments Props", route.params)
         database().ref(`users/${item.userID}/posts/${item.key}/comments`).on("value", snap => {
             if (snap.exists()) {
-                console.log(snap.val())
                 setAllComments(snap.val())
                 setisLoading(false)
             }
@@ -48,7 +45,7 @@ const Comments = ({ route }) => {
     const handleSubmit = () => {
         if (state.comment) {
             let comKey = database().ref(`users/${item.userID}/posts/${item.key}/comments`).push().key
-            let time = new Date()
+            let time = moment().format()
             let obj = { comment: state.comment, comKey, postID: item.key, createdAt: time, commentBy: currentUserUID }
             // console.log("obj", obj)
             database().ref(`users/${item.userID}/posts/${item.key}/comments`).child(comKey).set(obj, err => {
@@ -76,14 +73,13 @@ const Comments = ({ route }) => {
                         <ActivityIndicator size="large" color="#0000ff" />
                     </View> :
                     !!Object.keys(allComments).length ? Object.keys(allComments).map(key => {
-                        return <IndividualComments key={key} comment={allComments[key]} post={item} />
+                        return <IndividualComments commentTime={moment(allComments[key].createdAt).fromNow()} key={key} comment={allComments[key]} post={item} userID={item.userID} />
                     }) :
                         <View style={{
                             flex: 1, position: "relative",
                             height: Dimensions.get("screen").height - 170, justifyContent: "center", alignItems: "center"
                         }}>
                             <Text style={{ fontWeight: "bold" }}>No Comments Add One</Text>
-                            {/* <ActivityIndicator size="large" color="#0000ff" /> */}
                         </View>
                 }
             </ScrollView>

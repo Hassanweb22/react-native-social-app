@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import MyPosts from '../components/MyPosts/MyPosts';
+import AddPost from '../components/AddPost/AddPost';
 import IndividualPost from '../components/AllPosts/IndividualPost';
 import Comments from '../components/Comments/Comments';
 import colors from '../colors/colors';
@@ -25,15 +26,10 @@ function StackPosts() {
                 return (
                     <Button transparent style={{ marginRight: 20 }}>
                         <Icon
-                            name="sign-out-alt"
+                            name="plus-circle"
                             size={25}
                             color={'#fff'}
-                            onPress={() => {
-                                Auth()
-                                    .signOut()
-                                    .then(_ => console.log('SignOut'));
-                                dispatch(loginUser({}));
-                            }}
+                            onPress={() => navigation.navigate('AddPost')}
                         />
                     </Button>
                 );
@@ -57,6 +53,9 @@ function StackPosts() {
             <Stack.Screen options={{
                 headerTitle: "Comments on my post",
             }} name="mycomments" component={Comments} />
+            <Stack.Screen options={{
+                headerTitle: "Post Here",
+            }} name="AddPost" component={AddPost} />
         </Stack.Navigator>
     );
 }

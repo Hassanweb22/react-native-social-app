@@ -23,6 +23,7 @@ import storage from '@react-native-firebase/storage';
 import { useSelector } from 'react-redux';
 import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import MyColors from '../../colors/colors';
+import moment from "moment"
 
 const TodoForm = ({ navigation, todos }) => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
@@ -115,10 +116,10 @@ const TodoForm = ({ navigation, todos }) => {
     let key = database().ref(`users/${currentUserUID}/posts`).push().key;
     state.photo && imageUpload(key);
 
+    console.log("moment js date", moment("2021-06-24T05:09:49-07:00").fromNow())
+
     if (state.title) {
-      let iosDate = new Date(firebase.database().getServerTime())
-      let androidDate = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
-      let obj = { title, createdAt: androidDate, key, userID: currentUserUID };
+      let obj = { title, createdAt: moment().format(), key, userID: currentUserUID };
       // console.log("obj", obj.createdAt)
       database()
         .ref(`users/${currentUserUID}/posts`)
@@ -128,7 +129,7 @@ const TodoForm = ({ navigation, todos }) => {
             return console.log('error', err);
           }
           else {
-            setState(initialState);
+            !state.photo && setState(initialState);
           }
           // console.log('posts submitted');
         });

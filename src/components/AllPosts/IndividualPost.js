@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
 import MyColors from "../../colors/colors"
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, Image, ScrollView, Alert } from 'react-native'
 import { Body, Card, Text, CardItem, Content, Left, Thumbnail, Button, Container, Right } from 'native-base'
 import Icon from "react-native-vector-icons/FontAwesome5"
@@ -8,6 +8,7 @@ import storage from '@react-native-firebase/storage'
 import LoadingView from '../UpdateProfile/LoadingView'
 import { useSelector } from 'react-redux'
 import Toast, { BaseToast } from 'react-native-toast-message';
+import moment from 'moment'
 
 const IndividualPost = (props) => {
     const { item, navigation, mypost } = props
@@ -20,6 +21,7 @@ const IndividualPost = (props) => {
     const [profileLoad, setProfileLoad] = useState(false);
     const [imageLoad, setImageLoad] = useState(false);
     const [actions, setActions] = useState(false);
+    const [time, setTime] = useState("");
 
     useEffect(() => {
         const datafunc = () => {
@@ -27,10 +29,22 @@ const IndividualPost = (props) => {
                 if (data.exists()) {
                     setUser(data.val())
                 }
+                database().ref(`users/${item.userID}/posts/${item.key}/likes`).child(currentUserUID).on("value", snap => {
+                    if (snap.exists()) return setUserLikedPost(true)
+                    else return setUserLikedPost(false)
+                })
             })
         }
         datafunc()
-        return () => setUser({})
+        return () => {
+            clearInterval(intv)
+            setUser({})
+        }
+    }, [])
+
+    useEffect(() => {
+        let date = moment(item.createdAt).fromNow()
+        setTime(date)
     }, [])
 
     const findLikes = () => {
@@ -54,6 +68,17 @@ const IndividualPost = (props) => {
         }
     }
 
+    const interval = () => {
+        let date = moment(item.createdAt).fromNow()
+        setTime(date)
+        console.log(date, "interval Time")
+    }
+    let intv
+    const findDate = () => {
+        intv = mypost && setInterval(interval, 60000);
+    }
+    findDate()
+
 
     const handleDelete = (key) => {
         const deletePost = async () => {
@@ -63,10 +88,10 @@ const IndividualPost = (props) => {
                     position: "top",
                     topOffset: 40,
                     visibilityTime: 2000,
-                    text1: 'Delete',
+                    text1: 'Post',
                     text2: 'Your Post has been Deleted 👍 '
                 });
-                await storage().ref(`usersProfile/${item.userID}/posts`).child(key).delete()
+                item.picURL && await storage().ref(`usersProfile/${item.userID}/posts`).child(key).delete()
                     .then(_ => {
                         console.log("Deleted File from storage succefuully")
                     }).
@@ -112,7 +137,9 @@ const IndividualPost = (props) => {
 
     return (
         <View style={{ flex: 0, margin: 10 }}>
-            <Card style={styles.card} onTouchEnd={() => actions && setActions(false)}>
+            <Card onPress={() => {
+                clearInterval(intv)
+            }} style={styles.card} onTouchEnd={() => actions && setActions(false)}>
                 <CardItem >
                     <Left style={{ borderWidth: 1, borderColor: "transparent" }}>
                         <View>
@@ -131,8 +158,10 @@ const IndividualPost = (props) => {
                             // borderWidth: 1,
                             // borderColor: "red"
                         }}>
-                            <Text>{firstname + " " + lastname}</Text>
-                            <Text note style={{ fontSize: 12 }}>{new Date(item.createdAt).toLocaleDateString() + " " + new Date(item.createdAt).toLocaleTimeString()}</Text>
+                            <Text>{firstname ? (firstname + " " + lastname) : "Loading..."}</Text>
+                            <Text note style={{ fontSize: 12 }}>
+                                {time}
+                            </Text>
                         </Body>
                         {(item.userID === currentUserUID && !actions) &&
                             <Icon onPress={() => setActions(true)} name="ellipsis-v" size={20} color="#66BB6A" />}
@@ -148,7 +177,7 @@ const IndividualPost = (props) => {
                         </Right>
                     }
                 </CardItem>
-                <CardItem >
+                <CardItem>
                     <View style={{ position: "relative", width: "100%" }}>
                         <View style={{ flex: 1, paddingVertical: 10, paddingLeft: 4, borderBottomWidth: !item.picURL ? 1 : 0, borderColor: "#dcdfe2" }}>
                             <Text style={{}}>{item.title}</Text>
@@ -200,7 +229,7 @@ const IndividualPost = (props) => {
     )
 }
 
-export default IndividualPost
+export default React.memo(IndividualPost)
 
 const styles = StyleSheet.create({
     card: {

@@ -106,16 +106,6 @@ export default function MyDrawerNavigator() {
       <Drawer.Screen
         options={{
           drawerIcon: ({ color, focused, size }) => (
-            <Icon name="plus-circle" size={size} color={color} />
-          ),
-          drawerLabel: 'Add Post',
-        }}
-        name="Add Post"
-        component={AddPost}
-      />
-      <Drawer.Screen
-        options={{
-          drawerIcon: ({ color, focused, size }) => (
             <Icon name="list" size={size} color={color} />
           ),
           drawerLabel: 'My Posts',

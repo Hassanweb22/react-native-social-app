@@ -27,21 +27,17 @@ function StackPosts() {
                 return (
                     <Button transparent style={{ marginRight: 20 }}>
                         <Icon
-                            name="user"
+                            name="plus-circle"
                             size={25}
                             color={'#fff'}
-                            onPress={() => {
-                                Auth()
-                                    .signOut()
-                                    .then(_ => console.log('SignOut'));
-                                dispatch(loginUser({}));
-                            }}
+                            onPress={() => navigation.navigate('AddPost')}
                         />
                     </Button>
                 );
             }
         })}>
             <Stack.Screen options={({ route, navigation }) => ({
+                headerTitle: "Feeds",
                 headerLeft: () => {
                     return (
                         <Icon

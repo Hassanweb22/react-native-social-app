@@ -52,7 +52,7 @@ const Posts = ({ navigation }) => {
                     if (snap.exists()) {
                         let userPost = snap.val()
                         Object.keys(userPost).map(postKey => temp.push(userPost[postKey]))
-                        console.log('My posts', temp);
+                        // console.log('My posts', temp);
                         setPosts(temp)
                         setisLoading(false)
                     } else {
@@ -89,7 +89,7 @@ const Posts = ({ navigation }) => {
     );
 };
 
-export default Posts;
+export default React.memo(Posts);
 
 const styles = StyleSheet.create({
     container: {

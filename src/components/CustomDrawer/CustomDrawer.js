@@ -28,6 +28,7 @@ import auth from "@react-native-firebase/auth"
 import storage from "@react-native-firebase/storage"
 import LoadingView from "../UpdateProfile/LoadingView"
 import { loginUser } from '../../store/actions/actions';
+import colors from '../../colors/colors';
 
 
 const CustomDrawer = ({ progress, ...props }) => {
@@ -117,8 +118,8 @@ const CustomDrawer = ({ progress, ...props }) => {
       </TouchableOpacity>
       <Footer>
         <FooterTab>
-          <Button full>
-            <Text>Copyright © 2021 , Social App</Text>
+          <Button full style={{ backgroundColor: colors.green }}>
+            <Text style={{ color: "#fff" }}>Copyright © 2021 , Social App</Text>
           </Button>
         </FooterTab>
       </Footer>
