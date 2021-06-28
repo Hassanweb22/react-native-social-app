@@ -25,23 +25,19 @@ function StackPosts() {
             headerTitleAlign: "center",
             headerRight: () => {
                 return (
-                    <Button transparent style={{ marginRight: 20 }}>
+                    route.name === "AllPosts" && <Button transparent style={{ marginRight: 20 }}>
                         <Icon
-                            name="user"
+                            name="plus-circle"
                             size={25}
                             color={'#fff'}
-                            onPress={() => {
-                                Auth()
-                                    .signOut()
-                                    .then(_ => console.log('SignOut'));
-                                dispatch(loginUser({}));
-                            }}
+                            onPress={() => navigation.navigate('AddPost')}
                         />
                     </Button>
                 );
             }
         })}>
             <Stack.Screen options={({ route, navigation }) => ({
+                headerTitle: "Feeds",
                 headerLeft: () => {
                     return (
                         <Icon
@@ -58,16 +54,8 @@ function StackPosts() {
             })}
                 name="AllPosts" component={AllPosts}
             />
-            <Stack.Screen options={({ route, navigation }) => ({
-                headerRight: () => {
-                    return null
-                }
-            })} name="comments" component={Comments} />
-            <Stack.Screen options={({ route, navigation }) => ({
-                headerRight: () => {
-                    return null
-                }
-            })} name="AddPost" component={AddPost} />
+            <Stack.Screen name="comments" component={Comments} />
+            <Stack.Screen name="AddPost" component={AddPost} />
         </Stack.Navigator>
     );
 }

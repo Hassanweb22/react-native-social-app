@@ -121,25 +121,22 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
                         }
                     </Left>
                     {actions &&
-                        <Right style={{
-                            borderWidth: 1, flex: 0.45, flexDirection: "row", justifyContent: "space-around",
-                            borderRadius: 10,
-                            borderColor: colors.green, backgroundColor: "#e8f5e9c7",
-                        }}>
-                            <Icon
+                        <Right style={styles.actionsContainer}>
+                            {comment.commentBy === currentUserUID && <Icon
                                 onPress={() => setState({ editText: comment.comment, edit: true })}
-                                name="edit" size={20} color="green" style={{ paddingVertical: 7 }} />
+                                name="edit" size={20} color="green" style={{ paddingVertical: 7 }} />}
                             <Icon onPress={() => handleDelete()} name="trash" size={20} color="#F44337" style={{ paddingVertical: 7 }} />
                         </Right>
                     }
                 </CardItem>
-                {!state.edit ? <CardItem cardBody style={{ marginHorizontal: 10, marginVertical: 10, borderWidth: 0, }}>
-                    <Body>
-                        <Text>
-                            {comment.comment}
-                        </Text>
-                    </Body>
-                </CardItem> :
+                {!state.edit ?
+                    <CardItem cardBody style={{ marginHorizontal: 10, marginVertical: 10, borderWidth: 0, }}>
+                        <Body>
+                            <Text>
+                                {comment.comment}
+                            </Text>
+                        </Body>
+                    </CardItem> :
                     <CardItem >
                         <Body >
                             <Item picker style={{ marginTop: -10, borderBottomWidth: 1.5, borderColor: colors.green }}>
@@ -149,11 +146,7 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
                                 width: Dimensions.get("window").width - 60,
                                 flexDirection: "row", justifyContent: "flex-end", alignItems: "center"
                             }}>
-                                <TouchableOpacity style={{
-                                    borderWidth: 1, paddingHorizontal: 10,
-                                    paddingVertical: 4, marginHorizontal: 5, marginTop: 10, borderRadius: 10, borderColor: colors.green,
-                                    backgroundColor: "#bdefc1c7",
-                                }}
+                                <TouchableOpacity style={styles.editActionsButton}
                                     disabled={state.editText === comment.comment || !state.editText.length}
                                     onPress={handleEdit}
                                 >
@@ -161,11 +154,7 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
                                         Update
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={{
-                                    borderWidth: 1, paddingHorizontal: 10,
-                                    paddingVertical: 4, marginHorizontal: 5, marginTop: 10, borderRadius: 10, borderColor: "#f328289e",
-                                    backgroundColor: "#ff73737d"
-                                }}
+                                <TouchableOpacity style={[styles.editActionsButton, { borderColor: "#f328289e", backgroundColor: "#ff73737d" }]}
                                     onPress={() => setState(initialState)}
                                 >
                                     <Text style={{ fontSize: 14 }}>
@@ -174,7 +163,8 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
                                 </TouchableOpacity>
                             </View>
                         </Body>
-                    </CardItem>}
+                    </CardItem>
+                }
             </Card>
         </View>
     )
@@ -182,4 +172,15 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
 
 export default IndividualComments
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    editActionsButton: {
+        borderWidth: 1, paddingHorizontal: 10,
+        paddingVertical: 4, marginHorizontal: 5, marginTop: 10, borderRadius: 10, borderColor: colors.green,
+        backgroundColor: "#bdefc1c7",
+    },
+    actionsContainer: {
+        borderWidth: 1, flex: 0.45, flexDirection: "row", justifyContent: "space-around",
+        borderRadius: 10,
+        borderColor: colors.green, backgroundColor: "#e8f5e9c7",
+    }
+})

@@ -1,28 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {
-    Container,
-    Header,
-    Content,
-    List,
-    ListItem,
-    Text,
-    Left,
-    Right,
-    Card,
-    CardItem,
+    Container, Text
 } from 'native-base';
-import { Grid, Row, Col } from 'react-native-easy-grid';
 import {
-    Alert,
-    Modal,
-    Pressable,
-    ScrollView,
-    SafeAreaView,
-    StatusBar,
-    FlatList,
-    Dimensions,
-    ActivityIndicator,
+    ScrollView, SafeAreaView, StatusBar, FlatList, Dimensions, ActivityIndicator,
 } from 'react-native';
 
 import { View, StyleSheet } from 'react-native';
@@ -43,7 +25,6 @@ const Posts = ({ navigation }) => {
     const [isLoading, setisLoading] = useState(true);
 
     useEffect(() => {
-        let uid = loginUser.uid;
         const dataFunc = () => {
             database()
                 .ref(`users`)
@@ -62,7 +43,6 @@ const Posts = ({ navigation }) => {
                             }
                         })
                         setPosts(temp)
-                        console.log(temp, "allpost")
                         setisLoading(false)
                     }
                     else {

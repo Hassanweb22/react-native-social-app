@@ -10,9 +10,11 @@ import { loginUser } from '../store/actions/actions';;
 import CustomDrawerContent from '../components/CustomDrawer/CustomDrawer';
 import StackPostsAll from './StackPostsAll';
 import StackPostMy from './StackPostMy';
+import CustomMessageStack from './CustomMessageStack';
 import DashboardAndProfileStack from "./DashboardAndProfileStack"
-import SkeletonLoading from '../components/SkeletonLoading/SkeletonLoading';
-import CommentLoading from '../components/SkeletonLoading/CommentLoading';
+import Messages from "../components/Messages/Users"
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+
 
 export default function MyDrawerNavigator() {
   const Drawer = createDrawerNavigator();
@@ -34,7 +36,7 @@ export default function MyDrawerNavigator() {
 
       }}
       screenOptions={({ navigation, route }) => ({
-        headerShown: !(route.name === "Posts" || route.name === "MyPosts" || route.name === "Home"),
+        headerShown: false,
         headerStyle: {
           // borderWidth: 1,
           backgroundColor: MyColors.green,
@@ -101,6 +103,17 @@ export default function MyDrawerNavigator() {
         }}
         name="Posts"
         component={StackPostsAll}
+      />
+      <Drawer.Screen
+        options={{
+          drawerIcon: ({ color, focused, size }) => (
+            <MaterialIcons name="message" size={size} color={color} />
+          ),
+          drawerLabel: 'Messages',
+          headerTitle: "Messages",
+        }}
+        name="messages"
+        component={CustomMessageStack}
       />
     </Drawer.Navigator >
   );

@@ -1,0 +1,43 @@
+import React, { useState, useEffect } from 'react'
+import { Body, Card, CardItem, Container, Left, List, ListItem, Text, Thumbnail } from 'native-base'
+import { ScrollView, StyleSheet, View } from 'react-native'
+import database from '@react-native-firebase/database';
+import { useSelector } from 'react-redux';
+import colors from '../../colors/colors';
+import IndividualUser from './IndividualUser';
+
+
+const Users = ({ navigation }) => {
+    const currentUserUID = useSelector(state => state.todo.loginUser.uid);
+
+    const initialState = {
+        users: {}
+    }
+    const [state, setState] = useState(initialState)
+    const [profileLoad, setProfileLoad] = useState(false);
+
+
+    useEffect(() => {
+        database().ref(`users`).on("value", snap => {
+            setState({ ...state, users: snap.val() })
+            console.log(snap.val(), "users message")
+        })
+        return () => console.log("Messages unmounted")
+    }, [])
+    return (
+        <Container style={{ flex: 1, padding: 10, borderWidth: 0, borderColor: "green" }}>
+            {/* <CardItem header style={{ justifyContent: "center" }}>
+                <Text style={{ color: "green" }}>Messages</Text>
+            </CardItem> */}
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {Object.keys(state.users).map(key => {
+                    return <IndividualUser navigation={navigation} key={key} user={state.users[key]} userKey={key} />
+                })}
+            </ScrollView>
+        </Container>
+    )
+}
+
+export default Users
+
+const styles = StyleSheet.create({})
