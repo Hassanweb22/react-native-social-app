@@ -77,7 +77,7 @@ const IndividualPost = (props) => {
     const findDate = () => {
         intv = mypost && setInterval(interval, 60000);
     }
-    findDate()
+    // findDate()
 
 
     const handleDelete = (key) => {
@@ -136,11 +136,11 @@ const IndividualPost = (props) => {
     const { photoURL, firstname, lastname } = user
 
     return (
-        <View style={{ flex: 0, margin: 10 }}>
+        <View style={{ flex: 0, marginHorizontal: 10, marginVertical: 5 }}>
             <Card onPress={() => {
                 clearInterval(intv)
             }} style={styles.card} onTouchEnd={() => actions && setActions(false)}>
-                <CardItem >
+                <CardItem style={{ marginVertical: 0 }}>
                     <Left style={{ borderWidth: 1, borderColor: "transparent" }}>
                         <View>
                             <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }}
@@ -177,7 +177,7 @@ const IndividualPost = (props) => {
                         </Right>
                     }
                 </CardItem>
-                <CardItem>
+                <CardItem cardBody style={{ marginHorizontal: 9, marginTop: -10 }}>
                     <View style={{ position: "relative", width: "100%" }}>
                         <View style={{ flex: 1, paddingVertical: 10, paddingLeft: 4, borderBottomWidth: !item.picURL ? 1 : 0, borderColor: "#dcdfe2" }}>
                             <Text style={{}}>{item.title}</Text>
@@ -192,12 +192,13 @@ const IndividualPost = (props) => {
                                 onLoadEnd={_ => {
                                     setImageLoad(false)
                                 }}
+                                resizeMode="cover"
                             />
                             {imageLoad && <LoadingView postPic />}
                         </View>}
                     </View>
                 </CardItem>
-                <CardItem cardBody style={{ marginHorizontal: 10, paddingHorizontal: 20, marginVertical: 5 }}>
+                <CardItem cardBody style={{ marginHorizontal: 10, paddingHorizontal: 15, marginVertical: 10 }}>
                     <Left>
                         <Button onPress={_ => handleLike()} transparent
                             style={{

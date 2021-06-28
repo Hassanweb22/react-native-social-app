@@ -26,7 +26,6 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-// import { Auth, firebase } from "../../firebase/config"
 import Auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import storage from '@react-native-firebase/storage';

@@ -30,6 +30,7 @@ import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { useSelector } from 'react-redux';
 import IndividualPost from './IndividualPost'
+import SkeletonLoading from '../SkeletonLoading/SkeletonLoading';
 
 
 const Posts = ({ navigation }) => {
@@ -78,13 +79,20 @@ const Posts = ({ navigation }) => {
         database().ref(`users/${loginUser.uid}/posts`).child(id).remove();
     };
 
+    const skeleton = () => {
+        return (
+            <Container style={{ borderColor: "red", flex: 1, alignItems: "center", justifyContent: "flex-end", height: Dimensions.get("window").width }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </Container>
+            // <SkeletonLoading />
+        )
+    }
+
     return (
         <Container style={styles.container} >
             <ScrollView>
                 {isLoading ?
-                    <Container style={{ borderColor: "red", flex: 1, alignItems: "center", justifyContent: "flex-end", height: Dimensions.get("window").width }}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    </Container> :
+                    skeleton() :
                     posts.length > 0 ? posts.map(item => {
                         return <IndividualPost navigation={navigation} key={item.key} item={item} />
                     }) :

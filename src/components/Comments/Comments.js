@@ -7,6 +7,7 @@ import colors from '../../colors/colors';
 import { useSelector } from 'react-redux';
 import database from "@react-native-firebase/database"
 import moment from "moment"
+import CommentLoading from '../SkeletonLoading/CommentLoading';
 const Comments = ({ route }) => {
     const { item } = route.params
 
@@ -46,7 +47,7 @@ const Comments = ({ route }) => {
         if (state.comment) {
             let comKey = database().ref(`users/${item.userID}/posts/${item.key}/comments`).push().key
             let time = moment().format()
-            let obj = { comment: state.comment, comKey, postID: item.key, createdAt: time, commentBy: currentUserUID }
+            let obj = { comment: state.comment, comKey, postID: item.key, createdAt: time, commentBy: currentUserUID, edited: false }
             // console.log("obj", obj)
             database().ref(`users/${item.userID}/posts/${item.key}/comments`).child(comKey).set(obj, err => {
                 if (err) {
@@ -58,20 +59,23 @@ const Comments = ({ route }) => {
         }
     }
 
-    const showData = () => {
-        if (isLoading) return true
+    const skeletonComment = () => {
+        return (
+            // <View style={{
+            //     flex: 1, position: "relative",
+            //     height: Dimensions.get("screen").height - 170, justifyContent: "center", alignItems: "center"
+            // }}>
+            //     <ActivityIndicator size="large" color="#0000ff" />
+            // </View>
+            <CommentLoading />
+        )
     }
 
     return (
         <Container>
             <ScrollView>
                 {isLoading ?
-                    <View style={{
-                        flex: 1, position: "relative",
-                        height: Dimensions.get("screen").height - 170, justifyContent: "center", alignItems: "center"
-                    }}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    </View> :
+                    skeletonComment() :
                     !!Object.keys(allComments).length ? Object.keys(allComments).map(key => {
                         return <IndividualComments commentTime={moment(allComments[key].createdAt).fromNow()} key={key} comment={allComments[key]} post={item} userID={item.userID} />
                     }) :

@@ -24,7 +24,7 @@ function StackPosts() {
             headerTitleAlign: "center",
             headerRight: () => {
                 return (
-                    <Button transparent style={{ marginRight: 20 }}>
+                    route.name === "MyPosts" && <Button transparent style={{ marginRight: 20 }}>
                         <Icon
                             name="plus-circle"
                             size={25}
@@ -53,6 +53,7 @@ function StackPosts() {
             <Stack.Screen options={{
                 headerTitle: "Comments on my post",
             }} name="mycomments" component={Comments} />
+
             <Stack.Screen options={{
                 headerTitle: "Post Here",
             }} name="AddPost" component={AddPost} />

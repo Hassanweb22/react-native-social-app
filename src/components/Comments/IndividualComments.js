@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, StyleSheet, View } from 'react-native'
-import { Body, Card, CardItem, Container, Content, Left, Right, Text, Thumbnail } from "native-base"
+import { Alert, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Body, Card, CardItem, Container, Content, Form, Input, Item, Left, Right, Text, Thumbnail } from "native-base"
 import LoadingView from '../UpdateProfile/LoadingView'
 import database from '@react-native-firebase/database'
 import colors from '../../colors/colors'
@@ -17,14 +17,19 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
     const [imageLoad, setImageLoad] = useState(false);
     const [commenttator, setCommenttator] = useState({})
 
+    const initialState = {
+        edit: false,
+        editText: ""
+    }
     const [comTime, setComTime] = useState(commentTime);
     const [actions, setActions] = useState(false);
+    const [state, setState] = useState(initialState);
 
     useEffect(() => {
         database().ref(`users/${comment.commentBy}`).once("value", snap => {
             setCommenttator(snap.val())
         })
-        return () => console.log("")
+        return () => setState(initialState)
     }, [comment])
 
     useEffect(() => {
@@ -51,7 +56,7 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
         }
         Alert.alert(
             "Delete",
-            "Do You want to delete it this?",
+            "Do You want to delete this comment?",
             [
                 {
                     text: "Cancel",
@@ -61,6 +66,24 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
             ]
         );
 
+    }
+
+    const handleEdit = () => {
+        state.editText !== comment.comment &&
+            database().ref(`users/${userID}/posts/${comment.postID}/comments/${comment.comKey}`).update({
+                comment: state.editText,
+                edited: true
+            }).then(() => {
+                setState(initialState)
+                state.editText !== comment.comment && Toast.show({
+                    type: "success",
+                    position: "top",
+                    topOffset: 40,
+                    visibilityTime: 1000,
+                    text1: 'Comment',
+                    text2: 'Your Comment has been Edited 👍'
+                });
+            }).catch(err => console.log(err))
     }
 
     return (
@@ -88,29 +111,70 @@ const IndividualComments = ({ comment, userID, commentTime }) => {
                             // borderColor: "red"
                         }}>
                             <Text>{firstname ? (firstname + " " + lastname) : "Loading..."}</Text>
-                            <Text note style={{ fontSize: 12 }}>{comTime}</Text>
+                            <Text note style={{ fontSize: 12 }}>{comTime} {comment.edited && "(edited)"}</Text>
                         </Body>
                         {((comment.commentBy === currentUserUID || userID === currentUserUID) && !actions) &&
-                            <Icon onPress={() => setActions(true)} name="ellipsis-v" size={20} color="#66BB6A" />}
+                            <TouchableOpacity style={{ flex: 0.15, alignItems: "center", paddingVertical: 8 }}
+                                onPress={() => setActions(true)}>
+                                <Icon name="ellipsis-v" size={20} color="#66BB6A" />
+                            </TouchableOpacity>
+                        }
                     </Left>
                     {actions &&
                         <Right style={{
-                            borderWidth: 1, flex: 0.55, flexDirection: "row", justifyContent: "space-around",
-                            borderRadius: 10, paddingHorizontal: 0, paddingVertical: 4,
+                            borderWidth: 1, flex: 0.45, flexDirection: "row", justifyContent: "space-around",
+                            borderRadius: 10,
                             borderColor: colors.green, backgroundColor: "#e8f5e9c7",
                         }}>
-                            <Icon onPress={() => console.log("edit")} name="edit" size={20} color="green" />
-                            <Icon onPress={() => handleDelete()} name="trash" size={20} color="#F44337" />
+                            <Icon
+                                onPress={() => setState({ editText: comment.comment, edit: true })}
+                                name="edit" size={20} color="green" style={{ paddingVertical: 7 }} />
+                            <Icon onPress={() => handleDelete()} name="trash" size={20} color="#F44337" style={{ paddingVertical: 7 }} />
                         </Right>
                     }
                 </CardItem>
-                <CardItem cardBody style={{ marginHorizontal: 10, marginVertical: 10, borderWidth: 0, }}>
+                {!state.edit ? <CardItem cardBody style={{ marginHorizontal: 10, marginVertical: 10, borderWidth: 0, }}>
                     <Body>
                         <Text>
                             {comment.comment}
                         </Text>
                     </Body>
-                </CardItem>
+                </CardItem> :
+                    <CardItem >
+                        <Body >
+                            <Item picker style={{ marginTop: -10, borderBottomWidth: 1.5, borderColor: colors.green }}>
+                                <Input placeholder="comment" value={state.editText} onChangeText={text => setState({ ...state, editText: text })} />
+                            </Item>
+                            <View style={{
+                                width: Dimensions.get("window").width - 60,
+                                flexDirection: "row", justifyContent: "flex-end", alignItems: "center"
+                            }}>
+                                <TouchableOpacity style={{
+                                    borderWidth: 1, paddingHorizontal: 10,
+                                    paddingVertical: 4, marginHorizontal: 5, marginTop: 10, borderRadius: 10, borderColor: colors.green,
+                                    backgroundColor: "#bdefc1c7",
+                                }}
+                                    disabled={state.editText === comment.comment || !state.editText.length}
+                                    onPress={handleEdit}
+                                >
+                                    <Text style={{ fontSize: 14 }}>
+                                        Update
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{
+                                    borderWidth: 1, paddingHorizontal: 10,
+                                    paddingVertical: 4, marginHorizontal: 5, marginTop: 10, borderRadius: 10, borderColor: "#f328289e",
+                                    backgroundColor: "#ff73737d"
+                                }}
+                                    onPress={() => setState(initialState)}
+                                >
+                                    <Text style={{ fontSize: 14 }}>
+                                        cancel
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Body>
+                    </CardItem>}
             </Card>
         </View>
     )
