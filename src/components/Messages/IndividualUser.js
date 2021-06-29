@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import colors from '../../colors/colors';
 import firebase from "@react-native-firebase/app"
 import firestore from "@react-native-firebase/firestore"
+import moment from 'moment';
 
 
 
@@ -17,38 +18,52 @@ const IndividualUser = ({ user, userKey, navigation, currentUser }) => {
 
     const [profileLoad, setProfileLoad] = useState(false);
     const [lastMessage, setLastMessage] = useState({});
+    const [lasttime, setLasttime] = useState(null);
+    const [lastseen, setlastseen] = useState(null);
 
-    useEffect(() => {
+    const getLastMessage = () => {
         const combineID = userKey > currentUserUID ? userKey + "-" + currentUserUID : currentUserUID + "-" + userKey
         firestore().collection("chatrooms")
             .doc(combineID)
             .collection("messages")
             .orderBy("createdAt", "desc")
             .onSnapshot(snap => {
-                // console.log('User data: ', snap);
-                let arr = []
-                snap.docs.map(doc => {
-                    arr.push({
-                        ...doc.data(),
-                        _id: doc.id,
-                        createdAt: doc.data().createdAt.toDate()
+                if (!snap.empty) {
+                    let arr = []
+                    snap.docs.map(doc => {
+                        arr.push({
+                            ...doc.data(),
+                            _id: doc.id,
+                            createdAt: doc.data().createdAt.toDate()
+                        })
                     })
-                })
-                console.log('invidaulmessages', arr[arr.length - 1])
-                setLastMessage(arr[0]);
+                    // console.log('invidaulmessages', arr[0])
+                    console.log('createdAt', moment(arr[0].createdAt).fromNow())
+                    setLastMessage(arr[0]);
+                    setLasttime(arr[0].createdAt);
+                    setlastseen(arr[0].createdAt);
+                }
+                else return setLastMessage({})
             });
+    }
+
+    useEffect(() => {
+        return getLastMessage()
     }, [])
 
 
     return (
-        <Card style={{ marginVertical: 10, borderLeftWidth: 2, borderColor: colors.green }}
+        <Card onTouchStart={_ => setLasttime(lastseen)} style={{
+            marginVertical: 10, borderBottomWidth: 2, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderColor: colors.green,
+            borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, elevation: 4
+        }}
             onTouchEnd={_ => navigation.navigate("Chat", {
                 title: firstname + " " + lastname,
                 user,
                 userKey,
                 currentUser
             })}>
-            <CardItem>
+            <CardItem cardBody>
                 <Left>
                     <View>
                         <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }}
@@ -69,13 +84,21 @@ const IndividualUser = ({ user, userKey, navigation, currentUser }) => {
                         <Text note style={{ fontSize: 12 }}>{occupation}</Text>
                     </Body>
                 </Left>
-                <Right style={{ flex: 0.4, borderWidth: 0, marginTop: -10 }}>
-                    <Text note>a day ago</Text>
+                <Right style={{
+                    flex: 0.55, alignItems: "center", marginTop: -10,
+                    borderWidth: 1, borderRadius: 10, borderColor: colors.green,
+                    backgroundColor: "#bdefc1c7",
+                }}>
+                    <Text note style={{ fontSize: 12, color: "#263238" }}>
+                        {lasttime ? moment(lasttime).fromNow() : "---"}
+                    </Text>
                 </Right>
             </CardItem>
-            <CardItem>
-                <Body>
-                    {lastMessage && Object.keys(lastMessage).length ? <Text>{lastMessage.text ? lastMessage.text : "last message"}</Text> : null}
+            <CardItem cardBody>
+                <Body style={{ flex: 0.95, borderLeftWidth: 4, marginVertical: 10, marginLeft: 5, paddingHorizontal: 14, borderColor: colors.green }}>
+                    {!!Object.keys(lastMessage).length ?
+                        <Text numberOfLines={1} style={{ fontWeight: "bold", fontFamily: "sans-serif" }}>{lastMessage.text}</Text>
+                        : <Text>No Messages To Show</Text>}
                 </Body>
             </CardItem>
         </Card>

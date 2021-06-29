@@ -37,7 +37,7 @@ const Users = ({ navigation }) => {
             </CardItem> */}
             <ScrollView showsVerticalScrollIndicator={false}>
                 {Object.keys(state.users).map(key => {
-                    return key !== currentUserUID && <IndividualUser currentUser={currentUser} navigation={navigation} key={key} user={state.users[key]} userKey={key} />
+                    return <IndividualUser currentUser={currentUser} navigation={navigation} key={key} user={state.users[key]} userKey={key} />
                 })}
             </ScrollView>
         </Container>
