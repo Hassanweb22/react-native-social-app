@@ -10,10 +10,12 @@ import IndividualUser from './IndividualUser';
 const Users = ({ navigation }) => {
     const currentUserUID = useSelector(state => state.todo.loginUser.uid);
 
+
     const initialState = {
         users: {}
     }
     const [state, setState] = useState(initialState)
+    const [currentUser, setcurrentUser] = useState()
     const [profileLoad, setProfileLoad] = useState(false);
 
 
@@ -22,8 +24,12 @@ const Users = ({ navigation }) => {
             setState({ ...state, users: snap.val() })
             console.log(snap.val(), "users message")
         })
+        database().ref(`users/${currentUserUID}`).on("value", snap => {
+            setcurrentUser(snap.val())
+        })
         return () => console.log("Messages unmounted")
     }, [])
+
     return (
         <Container style={{ flex: 1, padding: 10, borderWidth: 0, borderColor: "green" }}>
             {/* <CardItem header style={{ justifyContent: "center" }}>
@@ -31,7 +37,7 @@ const Users = ({ navigation }) => {
             </CardItem> */}
             <ScrollView showsVerticalScrollIndicator={false}>
                 {Object.keys(state.users).map(key => {
-                    return <IndividualUser navigation={navigation} key={key} user={state.users[key]} userKey={key} />
+                    return key !== currentUserUID && <IndividualUser currentUser={currentUser} navigation={navigation} key={key} user={state.users[key]} userKey={key} />
                 })}
             </ScrollView>
         </Container>

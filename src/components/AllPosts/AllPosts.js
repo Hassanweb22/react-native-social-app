@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import {
-    Container, Text
-} from 'native-base';
+import {Container, Text} from 'native-base';
 import {
     ScrollView, SafeAreaView, StatusBar, FlatList, Dimensions, ActivityIndicator,
 } from 'react-native';
 
 import { View, StyleSheet } from 'react-native';
-import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { useSelector } from 'react-redux';
 import IndividualPost from './IndividualPost'

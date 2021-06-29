@@ -16,7 +16,7 @@ function StackPosts() {
     const dispatch = useDispatch()
     const Stack = createStackNavigator()
     return (
-        <Stack.Navigator initialRouteName="AllPosts" screenOptions={({ route, navigation, focs }) => ({
+        <Stack.Navigator initialRouteName="AllPosts" screenOptions={({ route, navigation, focus }) => ({
             headerStyle: {
                 backgroundColor: colors.green,
             },
