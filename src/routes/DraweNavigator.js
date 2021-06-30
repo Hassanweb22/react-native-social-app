@@ -28,7 +28,8 @@ export default function MyDrawerNavigator() {
   return (
     <Drawer.Navigator
       drawerContent={({ ...props }) => <CustomDrawerContent {...props} />}
-      // hideStatusBar={true}
+      hideStatusBar={true}
+      statusBarAnimation="fade"
       drawerContentOptions={{
         activeBackgroundColor: "#c0edc1",
         activeTintColor: "green",

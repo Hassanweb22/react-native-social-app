@@ -90,7 +90,7 @@ const CustomDrawer = ({ progress, ...props }) => {
           <Body>
             <Text style={{ color: isDark ? "#fff" : "#000" }}>{user.firstname + " " + user.lastname}</Text>
             <Text note style={{
-              marginLeft: 10,
+              marginLeft: 1,
               fontSize: 12, fontWeight: '500', textTransform: "capitalize",
               color: isDark ? colors.occupation : "grey"
             }}>

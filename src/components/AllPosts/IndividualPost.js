@@ -162,9 +162,9 @@ const IndividualPost = (props) => {
     const { photoURL, firstname, lastname } = user
 
     return (
-        <View style={{ flex: 0, marginHorizontal: 10, marginVertical: 5 }} onLayout={_ => setTime(moment(item.createdAt).fromNow())}>
-            <Card style={styles.card} onTouchEnd={() => actions && setActions(false)}>
-                <CardItem style={{ marginVertical: 0 }}>
+        <View style={{ flex: 0, marginHorizontal: 10, marginVertical: 5, }} onLayout={_ => setTime(moment(item.createdAt).fromNow())}>
+            <Card style={[styles.card, {}]} onTouchEnd={() => actions && setActions(false)}>
+                <CardItem style={{ marginVertical: 0, }}>
                     <Left style={{ borderWidth: 1, borderColor: "transparent" }}>
                         <View>
                             <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }}
