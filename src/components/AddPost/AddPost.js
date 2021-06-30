@@ -1,18 +1,6 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {
-  Container,
-  Content,
-  Button,
-  Card,
-  CardItem,
-  Text,
-  Form,
-  Item,
-  Input,
-  Label,
-  Body,
-} from 'native-base';
+import { Container, Content, Button, Card, CardItem, Text, Form, Item, Input, Label, Body } from 'native-base';
 import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import MyHeader from '../Header/Header';
 import MyFooter from '../Footer/Footer';
@@ -24,9 +12,12 @@ import { useSelector } from 'react-redux';
 import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import MyColors from '../../colors/colors';
 import moment from "moment"
+import colors from '../../colors/colors';
 
 const TodoForm = ({ navigation, todos }) => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
+  const isDark = useSelector(state => state.todo.dark);
+
   const initialState = {
     title: '',
     photo: null,
@@ -141,8 +132,8 @@ const TodoForm = ({ navigation, todos }) => {
   };
 
   return (
-    <Container>
-      <Container style={styles.container}>
+    <Container style={{ backgroundColor: isDark ? colors.dark : "#fff" }}>
+      <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]}>
         <KeyboardAvoidingScrollView>
           <Card style={styles.card}>
             <CardItem bordered>
@@ -222,7 +213,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderRadius: 20,
     marginHorizontal: 5,
-    // marginTop: 100,
+    marginTop: 120,
     padding: 10,
     // borderColor: "#000"
   },

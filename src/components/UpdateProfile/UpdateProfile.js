@@ -15,9 +15,14 @@ import storage from '@react-native-firebase/storage';
 import { useSelector } from 'react-redux';
 import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import PhotoModal from "./PhotoModal"
+import colors from '../../colors/colors';
+import Toast from 'react-native-toast-message';
 
 const UpdateProfile = () => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
+  const isDark = useSelector(state => state.todo.dark);
+
+
 
   const initialState = {
     fname: '',
@@ -105,7 +110,16 @@ const UpdateProfile = () => {
       () => {
         uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
           console.log('File available at', downloadURL);
-          database().ref(`users/${currentUserUID}`).child("photoURL").set(downloadURL)
+          database().ref(`users/${currentUserUID}`).child("photoURL").set(downloadURL).then(_ => {
+            Toast.show({
+              type: "success",
+              position: "top",
+              topOffset: 40,
+              visibilityTime: 1000,
+              text1: 'Photo',
+              text2: 'Your Profile Photo been Updated 👍'
+            });
+          })
         });
         setState({ ...state, photo: null })
         setProgress(0)
@@ -131,6 +145,14 @@ const UpdateProfile = () => {
       if (err) {
         console.log('error', err);
       } else {
+        Toast.show({
+          type: "success",
+          position: "top",
+          topOffset: 40,
+          visibilityTime: 1000,
+          text1: 'Update',
+          text2: 'Your Profile has been Updated 👍'
+        });
         console.log('successfully updated');
         // setState(initialState);
       }
@@ -145,7 +167,7 @@ const UpdateProfile = () => {
 
   return (
     <Container>
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]}>
         <KeyboardAvoidingScrollView style={{ borderWidth: 0 }}>
           <Card style={styles.card}>
             <CardItem>
@@ -230,10 +252,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // flexDirection: 'column',
-    // justifyContent: 'space-around',
-    padding: 5,
+    // justifyContent: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 10
     // borderWidth: 3,
-    // borderColor: 'red'
   },
   card: {
     elevation: 5,

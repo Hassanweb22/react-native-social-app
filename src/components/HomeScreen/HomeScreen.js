@@ -21,46 +21,33 @@ import { useSelector } from 'react-redux';
 
 import Auth from '@react-native-firebase/auth';
 import Database from '@react-native-firebase/database';
+import colors from '../../colors/colors';
 
 const HomeScreen = ({ navigation }) => {
   const data = { name: 'hassan', email: 'hasso@gmail.com', age: 22 };
+  const currentUserUID = useSelector(state => state.todo.loginUser.uid);
+  const isDark = useSelector(state => state.todo.dark);
 
   const [user, setUser] = useState({});
 
   useEffect(() => {
-
-    Auth().onAuthStateChanged(user => {
-      if (user) {
-        Database()
-          .ref('users')
-          .child(user.uid)
-          .on('value', snap => {
-            setUser(snap.val());
-            // console.log('user', user);
-          });
-      } else {
-        console.log('no user');
-      }
-    });
+    if (currentUserUID) {
+      Database()
+        .ref('users')
+        .child(currentUserUID)
+        .on('value', snap => {
+          setUser(snap.val());
+        });
+    } else {
+      console.log('no user');
+    }
   }, []);
 
-  const sendData = () => {
-    Database()
-      .ref('users')
-      .child('user')
-      .set({
-        name: 'Hassan',
-        email: 'hassan0998khan@gmail.com',
-      })
-      .then(data => console.log(data))
-      .catch(err => console.log(err));
-  };
 
   return (
     <Container>
-      <StatusBar barStyle="light-content" backgroundColor="green" />
-      {/* <MyHeader title="Dashboard" color="#5CB85C" /> */}
-      <Container style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.green} />
+      <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]}>
         <Card style={styles.card}>
           <View style={styles.cardView}>
             <Text style={styles.welcomeTitle}>
@@ -69,20 +56,20 @@ const HomeScreen = ({ navigation }) => {
           </View>
           <View>
             <Text style={{ textAlign: 'center' }}>
-              Choose one of the following
+              You can Create Posts Like it comment it and can Chat with others users
             </Text>
           </View>
           <View style={styles.bottomLinks}>
             <TouchableOpacity
               style={styles.bottomLink}
-              onPress={_ => navigation.navigate('Add Post')}>
-              <Text style={styles.bottomLinkText}>Add Posts</Text>
+              onPress={_ => navigation.openDrawer()}>
+              <Text style={styles.bottomLinkText}>Open Drawer</Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.bottomLink}
               onPress={_ => navigation.navigate('Posts')}>
               <Text style={styles.bottomLinkText}>Check Posts</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </Card>
       </Container>

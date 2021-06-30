@@ -3,6 +3,7 @@ let add = 'add';
 let set = 'set';
 let update = 'update';
 let login = 'login';
+let screenColor = 'screenColor';
 
 const loginUser = user => {
   console.log('afjabijf', user);
@@ -30,11 +31,21 @@ const setTodo = todo => {
   };
 };
 
+const setScreenColor = value => {
+  console.log("setScreenColor", value)
+  return {
+    type: screenColor,
+    payload: value,
+  };
+};
+
 export {
   addTodo,
   updateTodo,
   setTodo,
   loginUser,
+  setScreenColor,
+  screenColor,
   add,
   remove,
   update,

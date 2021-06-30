@@ -12,6 +12,8 @@ const Comments = ({ route }) => {
     const { item } = route.params
 
     const currentUserUID = useSelector(state => state.todo.loginUser.uid);
+    const isDark = useSelector(state => state.todo.dark)
+
     const initialState = {
         comment: ""
     };
@@ -72,7 +74,7 @@ const Comments = ({ route }) => {
     }
 
     return (
-        <Container>
+        <Container style={{ backgroundColor: isDark ? colors.dark : "#fff" }}>
             <ScrollView>
                 {isLoading ?
                     skeletonComment() :
@@ -83,7 +85,7 @@ const Comments = ({ route }) => {
                             flex: 1, position: "relative",
                             height: Dimensions.get("screen").height - 170, justifyContent: "center", alignItems: "center"
                         }}>
-                            <Text style={{ fontWeight: "bold" }}>No Comments Add One</Text>
+                            <Text style={{ fontWeight: "bold", color: isDark ? "#fff" : "#000" }}>No Comments Add One</Text>
                         </View>
                 }
             </ScrollView>

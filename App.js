@@ -70,8 +70,8 @@ const App = () => {
 
   return (
     <>
-      <Provider store={store}>
-        <StatusBar barStyle="dark-content" backgroundColor="transparent" />
+      <Provider store={store} >
+        <StatusBar barStyle="dark-content" backgroundColor="green" />
         <PersistGate loading={null} persistor={persistor}>
           <SafeAreaProvider>
             <NavigationContainer>

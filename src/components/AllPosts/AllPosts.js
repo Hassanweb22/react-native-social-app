@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Container, Text} from 'native-base';
+import { Container, Text } from 'native-base';
 import {
     ScrollView, SafeAreaView, StatusBar, FlatList, Dimensions, ActivityIndicator,
 } from 'react-native';
@@ -8,7 +8,9 @@ import { View, StyleSheet } from 'react-native';
 import database from '@react-native-firebase/database';
 import { useSelector } from 'react-redux';
 import IndividualPost from './IndividualPost'
+
 import SkeletonLoading from '../SkeletonLoading/SkeletonLoading';
+import colors from '../../colors/colors';
 
 
 const Posts = ({ navigation }) => {
@@ -16,37 +18,36 @@ const Posts = ({ navigation }) => {
 
     const loginUser = useSelector(state => state.todo.loginUser);
     const currentUserUID = useSelector(state => state.todo.loginUser.uid);
+    const isDark = useSelector(state => state.todo.dark)
 
     const [posts, setPosts] = useState([]);
     const [isLoading, setisLoading] = useState(true);
 
-    useEffect(() => {
-        const dataFunc = () => {
-            database()
-                .ref(`users`)
-                .on('value', snap => {
+    const dataFunc = () => {
+        database()
+            .ref(`users`)
+            .on('value', snap => {
+                if (snap.exists()) {
                     let temp = []
-                    if (snap.exists()) {
-                        Object.keys(snap.val()).map(userID => {
-                            if (userID !== currentUserUID) {
-                                if (snap.val()[userID]?.posts) {
-                                    let userPost = snap.val()[userID]?.posts
-                                    Object.keys(userPost).map(postKey => temp.push(userPost[postKey]))
-                                }
-                                else {
-                                    console.log(snap.val()[userID].firstname, "user has no post",)
-                                }
+                    Object.keys(snap.val()).map(userID => {
+                        if (userID !== currentUserUID) {
+                            if (snap.val()[userID]?.posts) {
+                                let userPost = snap.val()[userID]?.posts
+                                Object.keys(userPost).map(postKey => temp.push(userPost[postKey]))
                             }
-                        })
-                        setPosts(temp)
-                        setisLoading(false)
-                    }
-                    else {
-                        setPosts([])
-                        setisLoading(false)
-                    }
-                });
-        };
+                        }
+                    })
+                    temp.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    setPosts(temp)
+                    setisLoading(false)
+                }
+                else {
+                    setPosts([])
+                    setisLoading(false)
+                }
+            });
+    };
+    useEffect(() => {
         dataFunc();
         return () => console.log("Clear")
     }, []);
@@ -57,26 +58,33 @@ const Posts = ({ navigation }) => {
 
     const skeleton = () => {
         return (
-            <Container style={{ borderColor: "red", flex: 1, alignItems: "center", justifyContent: "flex-end", height: Dimensions.get("window").width }}>
-                <ActivityIndicator size="large" color="#0000ff" />
+            <Container style={{ alignItems: "center", justifyContent: "center", backgroundColor: isDark ? colors.dark : "#fff" }}>
+                <ActivityIndicator size="large" color={isDark ? "lightgreen" : "#000"} />
             </Container>
             // <SkeletonLoading />
         )
     }
 
     return (
-        <Container style={styles.container} >
-            <ScrollView>
-                {isLoading ?
-                    skeleton() :
-                    posts.length > 0 ? posts.map(item => {
-                        return <IndividualPost navigation={navigation} key={item.key} item={item} />
-                    }) :
-                        <Container style={{ borderColor: "red", flex: 1, alignItems: "center", justifyContent: "flex-end", height: Dimensions.get("window").width }}>
-                            <Text style={{ fontWeight: "bold" }}>No Posts Available</Text>
-                        </Container>
-                }
-            </ScrollView>
+        <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]} >
+            {isLoading ?
+                skeleton() :
+                posts.length > 0 ?
+                    <FlatList
+                        refreshing
+                        onResponderStart={_ => dataFunc()}
+                        data={posts}
+                        keyExtractor={(item) => item.key}
+                        renderItem={({ item }) => <IndividualPost navigation={navigation} key={item.key} item={item} />}
+                    />
+                    :
+                    <Container style={{
+                        borderColor: "red", borderWidth: 0, alignItems: "center", justifyContent: "center",
+                        backgroundColor: isDark ? colors.dark : "#fff"
+                    }}>
+                        <Text style={{ fontWeight: "bold", color: isDark ? "#fff" : "#000" }}>No Posts Available</Text>
+                    </Container>
+            }
         </Container>
     );
 };
@@ -87,10 +95,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
+        // borderWidth: 0,
         // justifyContent: 'center',
         // marginHorizontal: 10,
         // borderColor: "red",
-        borderWidth: 0.4
     },
     cardContainer: {
         flex: 1,

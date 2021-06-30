@@ -55,7 +55,7 @@ const IndividualUser = ({ user, userKey, navigation, currentUser }) => {
     return (
         <Card onTouchStart={_ => setLasttime(lastseen)} style={{
             marginVertical: 10, borderBottomWidth: 2, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderColor: colors.green,
-            borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, elevation: 4
+            borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, elevation: 4, shadowColor: colors.green
         }}
             onTouchEnd={_ => navigation.navigate("Chat", {
                 title: firstname + " " + lastname,
@@ -84,20 +84,22 @@ const IndividualUser = ({ user, userKey, navigation, currentUser }) => {
                         <Text note style={{ fontSize: 12 }}>{occupation}</Text>
                     </Body>
                 </Left>
-                <Right style={{
-                    flex: 0.55, alignItems: "center", marginTop: -10,
+                {lasttime ? <Right style={{
+                    flex: 0.50,
+                    alignItems: "center", marginTop: -10,
                     borderWidth: 1, borderRadius: 10, borderColor: colors.green,
                     backgroundColor: "#bdefc1c7",
                 }}>
-                    <Text note style={{ fontSize: 12, color: "#263238" }}>
-                        {lasttime ? moment(lasttime).fromNow() : "---"}
+                    <Text note style={{ fontSize: 9.5, color: "#263238" }}>
+                        {moment(lasttime).fromNow()}
                     </Text>
                 </Right>
+                    : null}
             </CardItem>
             <CardItem cardBody>
-                <Body style={{ flex: 0.95, borderLeftWidth: 4, marginVertical: 10, marginLeft: 5, paddingHorizontal: 14, borderColor: colors.green }}>
+                <Body style={styles.lastmessageBody}>
                     {!!Object.keys(lastMessage).length ?
-                        <Text numberOfLines={1} style={{ fontWeight: "bold", fontFamily: "sans-serif" }}>{lastMessage.text}</Text>
+                        <Text numberOfLines={1} style={{ fontWeight: "bold" }}>{lastMessage.text}</Text>
                         : <Text>No Messages To Show</Text>}
                 </Body>
             </CardItem>
@@ -107,4 +109,13 @@ const IndividualUser = ({ user, userKey, navigation, currentUser }) => {
 
 export default IndividualUser
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    lastmessageBody: {
+        flex: 0.95,
+        borderLeftWidth: 4,
+        marginVertical: 10,
+        marginLeft: 5,
+        paddingHorizontal: 14,
+        borderColor: colors.green
+    }
+})

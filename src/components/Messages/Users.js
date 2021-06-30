@@ -9,7 +9,7 @@ import IndividualUser from './IndividualUser';
 
 const Users = ({ navigation }) => {
     const currentUserUID = useSelector(state => state.todo.loginUser.uid);
-
+    const isDark = useSelector(state => state.todo.dark)
 
     const initialState = {
         users: {}
@@ -22,7 +22,7 @@ const Users = ({ navigation }) => {
     useEffect(() => {
         database().ref(`users`).on("value", snap => {
             setState({ ...state, users: snap.val() })
-            console.log(snap.val(), "users message")
+            // console.log(snap.val(), "users message")
         })
         database().ref(`users/${currentUserUID}`).on("value", snap => {
             setcurrentUser(snap.val())
@@ -31,13 +31,13 @@ const Users = ({ navigation }) => {
     }, [])
 
     return (
-        <Container style={{ flex: 1, padding: 10, borderWidth: 0, borderColor: "green" }}>
+        <Container style={{ flex: 1, padding: 10, borderWidth: 0, borderColor: "green", backgroundColor: isDark ? colors.dark : "#fff" }}>
             {/* <CardItem header style={{ justifyContent: "center" }}>
-                <Text style={{ color: "green" }}>Messages</Text>
+                <Text style={{ color: "green", fontWeight: "bold" }}>Messages</Text>
             </CardItem> */}
             <ScrollView showsVerticalScrollIndicator={false}>
                 {Object.keys(state.users).map(key => {
-                    return <IndividualUser currentUser={currentUser} navigation={navigation} key={key} user={state.users[key]} userKey={key} />
+                    return key !== currentUserUID && <IndividualUser currentUser={currentUser} navigation={navigation} key={key} user={state.users[key]} userKey={key} />
                 })}
             </ScrollView>
         </Container>

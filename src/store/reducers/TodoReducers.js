@@ -1,19 +1,22 @@
-import {remove, add, set, update, login} from '../actions/actions';
+import { remove, add, set, update, login, screenColor } from '../actions/actions';
 
 const InitialState = {
-  name: 'Hassan',
+  name: 'Hassan abdullah',
   email: 'Hassan@yahoo.com',
   loginUser: {},
+  dark: false,
   editTodo: {},
 };
 
 export default function TodoReducer(state = InitialState, action) {
   switch (action.type) {
     case login:
-      console.log(action);
-      return {...state, loginUser: action.payload};
+      return { ...state, loginUser: action.payload };
     case remove:
-      return {...state, todos: action.payload};
+      return { ...state, todos: action.payload };
+    case screenColor:
+      // console.log(action);
+      return { ...state, dark: action.payload };
     default:
       return state;
   }
