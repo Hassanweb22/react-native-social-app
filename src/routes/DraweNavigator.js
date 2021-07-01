@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import Ionicons from "react-native-vector-icons/Ionicons"
 import { Button } from 'native-base';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MyColors from '../colors/colors';
@@ -13,8 +15,10 @@ import StackPostMy from './StackPostMy';
 import CustomMessageStack from './CustomMessageStack';
 import DashboardAndProfileStack from "./DashboardAndProfileStack"
 import Messages from "../components/Messages/Users"
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import { Platform } from 'react-native';
+import TabStack from './TabStack';
+import TabBar from '../components/TabBar/TabBar';
+import CustomTabBar from './CustomTabNavigator/CustomTabNavigator';
 
 
 export default function MyDrawerNavigator() {
@@ -116,6 +120,18 @@ export default function MyDrawerNavigator() {
         }}
         name="messages"
         component={CustomMessageStack}
+      />
+      <Drawer.Screen
+        options={{
+          drawerIcon: ({ color, focused, size }) => (
+            <Ionicons name="options" size={size} color={color} />
+          ),
+          drawerLabel: 'Tabs',
+          // headerTitle: "Messages",
+          headerShown: false
+        }}
+        name="TabStack"
+        component={TabBar}
       />
     </Drawer.Navigator >
   );

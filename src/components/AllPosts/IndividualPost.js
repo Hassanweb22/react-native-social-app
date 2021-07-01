@@ -1,6 +1,6 @@
 import MyColors from "../../colors/colors"
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Image, ScrollView, Alert, Dimensions, TouchableOpacity, Modal } from 'react-native'
+import { StyleSheet, View, Image, ScrollView, Alert, Dimensions, TouchableOpacity, Modal, Platform } from 'react-native'
 import { Body, Card, Text, CardItem, Content, Left, Thumbnail, Button, Container, Right, Item, Input } from 'native-base'
 import Icon from "react-native-vector-icons/FontAwesome5"
 import database from '@react-native-firebase/database'
@@ -190,11 +190,12 @@ const IndividualPost = (props) => {
         <View style={{ flex: 0, marginHorizontal: 10, marginVertical: 5, }} onLayout={_ => setTime(moment(item.createdAt).fromNow())}>
             <View style={{}}>
                 <Modal visible={isVisible} transparent={true}>
-                    <TouchableOpacity activeOpacity={0.7} onPress={_ => imageViewZoom(false, "")} style={{ flexDirection: "row", justifyContent: "flex-start", backgroundColor: colors.green, borderWidth: 5, elevation: 0, marginLeft: 0 }} onPress={_ => imageViewZoom(false, "")}>
-                        <Icon style={{ padding: 4, marginLeft: 10 }} name="arrow-circle-left" color="#fff" size={20} />
-                        <Text style={{ padding: 4, color: "#fff" }}>Back</Text>
-                    </TouchableOpacity>
-                    <ImageViewer renderHeader={_ => null} onCancel={_ => imageViewZoom(false, "")} imageUrls={images} />
+                    {Platform.OS === "android" &&
+                        <TouchableOpacity activeOpacity={0.7} onPress={_ => imageViewZoom(false, "")} style={{ flexDirection: "row", justifyContent: "flex-start", backgroundColor: colors.green, borderWidth: 5, elevation: 0, marginLeft: 0 }} onPress={_ => imageViewZoom(false, "")}>
+                            <Icon style={{ padding: 4, marginLeft: 10 }} name="arrow-circle-left" color="#fff" size={20} />
+                            <Text style={{ padding: 4, color: "#fff" }}>Back</Text>
+                        </TouchableOpacity>}
+                    <ImageViewer onLongPress={_ => imageViewZoom(false, "")} renderHeader={_ => null} onCancel={_ => imageViewZoom(false, "")} imageUrls={images} />
                 </Modal>
             </View>
             <Card style={[styles.card, {}]} onTouchEnd={() => actions && setActions(false)}>

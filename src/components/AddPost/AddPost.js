@@ -192,7 +192,7 @@ const TodoForm = ({ navigation, todos }) => {
           </Card>
         </KeyboardAvoidingScrollView>
       </Container>
-      <MyFooter color="#5CB85C" />
+      {/* <MyFooter color="#5CB85C" /> */}
     </Container>
   );
 };

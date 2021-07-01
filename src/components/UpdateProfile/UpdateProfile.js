@@ -4,7 +4,7 @@ import {
   Container, Content, Button, Card, CardItem, Text, Form, Item, Input, Label, Body, Thumbnail,
 } from 'native-base';
 import MyColors from '../../colors/colors';
-import { View, StyleSheet, TouchableOpacity, ImagePickerIOS, SafeAreaView, Dimensions, PermissionsAndroid, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ImagePickerIOS, SafeAreaView, Dimensions, PermissionsAndroid, Alert, Permission, Platform } from 'react-native';
 import MyHeader from '../Header/Header';
 import MyFooter from '../Footer/Footer';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
@@ -120,8 +120,24 @@ const UpdateProfile = () => {
 
   }
 
+  const handleCameraPermission = async () => {
+    const res = await check(PERMISSIONS.IOS.CAMERA);
+
+    if (res === RESULTS.GRANTED) {
+      setCameraGranted(true);
+    } else if (res === RESULTS.DENIED) {
+      const res2 = await request(PERMISSIONS.IOS.CAMERA);
+      res2 === RESULTS.GRANTED
+        ? setCameraGranted(true)
+        : setCameraGranted(false);
+    }
+  };
+
 
   const requestCameraPermission = async () => {
+    if (Platform.OS === "ios") {
+      return cameraHandler();
+    }
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -138,6 +154,9 @@ const UpdateProfile = () => {
   };
 
   const downloadFile = async () => {
+    if (Platform.OS === "ios") {
+      return imageHandler();
+    }
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
