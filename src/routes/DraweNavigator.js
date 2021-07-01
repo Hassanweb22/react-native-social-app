@@ -14,6 +14,7 @@ import CustomMessageStack from './CustomMessageStack';
 import DashboardAndProfileStack from "./DashboardAndProfileStack"
 import Messages from "../components/Messages/Users"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import { Platform } from 'react-native';
 
 
 export default function MyDrawerNavigator() {
@@ -28,7 +29,7 @@ export default function MyDrawerNavigator() {
   return (
     <Drawer.Navigator
       drawerContent={({ ...props }) => <CustomDrawerContent {...props} />}
-      hideStatusBar={true}
+      // hideStatusBar={Platform.OS === 'ios' ? true : false}
       statusBarAnimation="fade"
       drawerContentOptions={{
         activeBackgroundColor: "#c0edc1",

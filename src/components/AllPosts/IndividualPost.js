@@ -1,6 +1,6 @@
 import MyColors from "../../colors/colors"
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Image, ScrollView, Alert, Dimensions, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Image, ScrollView, Alert, Dimensions, TouchableOpacity, Modal } from 'react-native'
 import { Body, Card, Text, CardItem, Content, Left, Thumbnail, Button, Container, Right, Item, Input } from 'native-base'
 import Icon from "react-native-vector-icons/FontAwesome5"
 import database from '@react-native-firebase/database'
@@ -9,6 +9,8 @@ import LoadingView from '../UpdateProfile/LoadingView'
 import { useSelector } from 'react-redux'
 import Toast, { BaseToast } from 'react-native-toast-message';
 import moment from 'moment'
+import ImageViewer from 'react-native-image-zoom-viewer';
+import colors from "../../colors/colors"
 
 const IndividualPost = (props) => {
     const { item, navigation, mypost } = props
@@ -27,6 +29,8 @@ const IndividualPost = (props) => {
     const [actions, setActions] = useState(false);
     const [time, setTime] = useState("");
     const [editState, setEditState] = useState(initialEditState);
+    const [isVisible, setisVisible] = useState(false);
+    const [photoURLget, setttphotoURLget] = useState("");
 
     useEffect(() => {
         const datafunc = () => {
@@ -158,15 +162,45 @@ const IndividualPost = (props) => {
             }).catch(err => console.log(err))
     }
 
-
     const { photoURL, firstname, lastname } = user
+
+    const images = [{
+        // Simplest usage.
+        url: photoURLget ? photoURLget : temURI,
+        width: Dimensions.get("screen").width,
+        // height: 500,
+
+        // width: number
+        // height: number
+        // Optional, if you know the image size, you can set the optimization performance
+
+        // You can pass props to <Image />.
+        props: {
+            // headers: ...
+        }
+    }]
+
+    const imageViewZoom = (isVisible, picURL) => {
+        setttphotoURLget(picURL)
+        setisVisible(isVisible)
+    }
+
 
     return (
         <View style={{ flex: 0, marginHorizontal: 10, marginVertical: 5, }} onLayout={_ => setTime(moment(item.createdAt).fromNow())}>
+            <View style={{}}>
+                <Modal visible={isVisible} transparent={true}>
+                    <TouchableOpacity activeOpacity={0.7} onPress={_ => imageViewZoom(false, "")} style={{ flexDirection: "row", justifyContent: "flex-start", backgroundColor: colors.green, borderWidth: 5, elevation: 0, marginLeft: 0 }} onPress={_ => imageViewZoom(false, "")}>
+                        <Icon style={{ padding: 4, marginLeft: 10 }} name="arrow-circle-left" color="#fff" size={20} />
+                        <Text style={{ padding: 4, color: "#fff" }}>Back</Text>
+                    </TouchableOpacity>
+                    <ImageViewer renderHeader={_ => null} onCancel={_ => imageViewZoom(false, "")} imageUrls={images} />
+                </Modal>
+            </View>
             <Card style={[styles.card, {}]} onTouchEnd={() => actions && setActions(false)}>
                 <CardItem style={{ marginVertical: 0, }}>
                     <Left style={{ borderWidth: 1, borderColor: "transparent" }}>
-                        <View>
+                        <TouchableOpacity onPress={_ => imageViewZoom(true, photoURL)}>
                             <Thumbnail small source={{ uri: photoURL ? photoURL : temURI }}
                                 onLoadStart={() => {
                                     // console.log("image load true")
@@ -177,7 +211,7 @@ const IndividualPost = (props) => {
                                 }}
                             />
                             {profileLoad && <LoadingView />}
-                        </View>
+                        </TouchableOpacity>
                         <Body style={{
                             // borderWidth: 1,
                             // borderColor: "red"
@@ -237,20 +271,22 @@ const IndividualPost = (props) => {
                         <View style={{ flex: 1, paddingVertical: 10, paddingLeft: 4, borderBottomWidth: !item.picURL ? 1 : 0, borderColor: "#dcdfe2" }}>
                             {!editState.edit && <Text style={{}}>{item.title}</Text>}
                         </View>
-                        {item.picURL && <View style={{ position: "relative", width: "100%", height: 200, borderRadius: 4, borderWidth: 0.5, borderColor: "grey" }}>
-                            <Image source={{ uri: item.picURL }}
-                                style={{ height: "100%", width: "100%", position: "absolute", borderRadius: 4 }}
-                                onLoadStart={() => {
-                                    // console.log("image load true")
-                                    return setImageLoad(true)
-                                }}
-                                onLoadEnd={_ => {
-                                    setImageLoad(false)
-                                }}
-                                resizeMode="cover"
-                            />
-                            {imageLoad && <LoadingView postPic />}
-                        </View>}
+                        {item.picURL &&
+                            <TouchableOpacity activeOpacity={0.6} onPress={_ => imageViewZoom(true, item.picURL)}
+                                style={{ position: "relative", width: "100%", height: 200, borderRadius: 4, borderWidth: 0.5, borderColor: "grey" }}>
+                                <Image source={{ uri: item.picURL }}
+                                    style={{ height: "100%", width: "100%", position: "absolute", borderRadius: 4 }}
+                                    onLoadStart={() => {
+                                        // console.log("image load true")
+                                        return setImageLoad(true)
+                                    }}
+                                    onLoadEnd={_ => {
+                                        setImageLoad(false)
+                                    }}
+                                    resizeMode="cover"
+                                />
+                                {imageLoad && <LoadingView postPic />}
+                            </TouchableOpacity>}
                     </View>
                 </CardItem>
 
@@ -282,7 +318,7 @@ const IndividualPost = (props) => {
                     </Right>
                 </CardItem>
             </Card>
-        </View>
+        </View >
     )
 }
 

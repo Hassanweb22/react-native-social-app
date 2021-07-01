@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Container, Content, Button, Card, CardItem, Text, Form, Item, Input, Label, Body } from 'native-base';
+import { Container, Button, Card, CardItem, Text, Form, Item, Input, Label } from 'native-base';
 import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import MyHeader from '../Header/Header';
 import MyFooter from '../Footer/Footer';
@@ -10,7 +10,6 @@ import auth, { firebase } from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import { useSelector } from 'react-redux';
 import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
-import MyColors from '../../colors/colors';
 import moment from "moment"
 import colors from '../../colors/colors';
 
@@ -132,7 +131,7 @@ const TodoForm = ({ navigation, todos }) => {
   };
 
   return (
-    <Container style={{ backgroundColor: isDark ? colors.dark : "#fff" }}>
+    <Container >
       <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]}>
         <KeyboardAvoidingScrollView>
           <Card style={styles.card}>
@@ -163,7 +162,7 @@ const TodoForm = ({ navigation, todos }) => {
                 <TouchableOpacity
                   style={{
                     padding: 5,
-                    borderColor: MyColors.green,
+                    borderColor: colors.green,
                     borderWidth: 1,
                     borderRadius: 10,
                   }}

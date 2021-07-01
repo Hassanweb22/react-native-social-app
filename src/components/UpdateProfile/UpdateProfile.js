@@ -4,7 +4,7 @@ import {
   Container, Content, Button, Card, CardItem, Text, Form, Item, Input, Label, Body, Thumbnail,
 } from 'native-base';
 import MyColors from '../../colors/colors';
-import { View, StyleSheet, TouchableOpacity, ImagePickerIOS, SafeAreaView, Dimensions } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ImagePickerIOS, SafeAreaView, Dimensions, PermissionsAndroid, Alert } from 'react-native';
 import MyHeader from '../Header/Header';
 import MyFooter from '../Footer/Footer';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
@@ -13,7 +13,7 @@ import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import { useSelector } from 'react-redux';
-import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import PhotoModal from "./PhotoModal"
 import colors from '../../colors/colors';
 import Toast from 'react-native-toast-message';
@@ -30,6 +30,7 @@ const UpdateProfile = () => {
     email: "",
     occupation: "",
     photo: null,
+    photoCamera: null
   };
   const initialError = {
     fname: '',
@@ -56,6 +57,10 @@ const UpdateProfile = () => {
   const onChangeText = (value, name) => {
     setState({ ...state, [name]: value });
   };
+
+  const checkChanges = () => {
+    return user.firstname !== state.fname || user.lastname !== state.lname || user.occupation !== state.occupation
+  }
 
   const imageHandler = () => {
     let options = {
@@ -84,11 +89,74 @@ const UpdateProfile = () => {
     });
   };
 
+
+  const cameraHandler = () => {
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchCamera({
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    }, (response) => {
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
+        const source = { uri: response.uri };
+        console.log('response', response.assets[0]);
+        setState({ ...state, photoCamera: response.assets[0] })
+      }
+    });
+
+  }
+
+
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("You can use the camera");
+        cameraHandler()
+      } else {
+        console.log("Camera permission denied");
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const downloadFile = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        imageHandler()
+      } else {
+        console.log("permissions storage denied")
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
   const imageUpload = () => {
     const usersProfile = firebase.storage().ref(`usersProfile/${currentUserUID}/profilePhoto`);
     const uploadTask = usersProfile
       .child("dp")
-      .putFile(state.photo.uri);
+      .putFile(state.photo?.uri || state.photoCamera.uri);
     uploadTask.on(
       'state_changed',
       snapshot => {
@@ -121,7 +189,7 @@ const UpdateProfile = () => {
             });
           })
         });
-        setState({ ...state, photo: null })
+        setState({ ...state, photo: null, photoCamera: null })
         setProgress(0)
       },
     );
@@ -129,7 +197,8 @@ const UpdateProfile = () => {
 
   const handleSubmit = () => {
 
-    state.photo && imageUpload();
+    console.log("state", state);
+    (state.photo || state.photoCamera) && imageUpload();
 
     if (state.occupation.length < 5) {
       return setError({ ...errors, occupation: "Length Should be greater than 5" })
@@ -140,8 +209,8 @@ const UpdateProfile = () => {
       lastname: state.lname,
       occupation: state.occupation
     };
-    console.log('obj', obj);
-    database().ref(`users/${currentUserUID}`).update(obj, err => {
+
+    checkChanges() && database().ref(`users/${currentUserUID}`).update(obj, err => {
       if (err) {
         console.log('error', err);
       } else {
@@ -163,7 +232,32 @@ const UpdateProfile = () => {
     return state.fname && state.lname && state.occupation ? true : false;
   };
 
-  const height = Dimensions.get("window").height - 100
+
+  const askAlert = () => {
+    Alert.alert(
+      "Take Photos",
+      "Select one of the following",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Launch Library", onPress: () => downloadFile() },
+        { text: "Launch Camera", onPress: () => requestCameraPermission() }
+      ]
+    );
+  }
+
+  const getFileName = () => {
+    if (state.photo) {
+      return state.photo.fileName
+    }
+    else if (state.photoCamera) {
+      return state.photoCamera.fileName
+    }
+    else return ""
+  }
 
   return (
     <Container>
@@ -209,17 +303,18 @@ const UpdateProfile = () => {
               <View
                 style={{ marginVertical: 20, marginHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
                 <TouchableOpacity
+                  disabled={getFileName()}
                   style={{
                     padding: 5,
                     borderColor: MyColors.green,
                     borderWidth: 1,
                     borderRadius: 10,
                   }}
-                  onPress={imageHandler}>
+                  onPress={askAlert}>
                   <Text style={{ fontSize: 15 }}>Upload Image</Text>
                 </TouchableOpacity>
                 <Text style={{ maxWidth: '60%' }} note>
-                  {state.photo && state.photo.fileName}
+                  {getFileName()}
                 </Text>
               </View>
             </View>
@@ -232,7 +327,7 @@ const UpdateProfile = () => {
                 full
                 success
                 disabled={!validate()}
-                onPress={() => handleSubmit()}>
+                onPress={handleSubmit}>
                 <Text>
                   Save <Icon name="get-pocket" size={15} color="#fff" />
                 </Text>

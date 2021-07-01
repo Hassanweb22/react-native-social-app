@@ -22,6 +22,7 @@ const Posts = ({ navigation }) => {
 
     const [posts, setPosts] = useState([]);
     const [isLoading, setisLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
 
     const dataFunc = () => {
         database()
@@ -40,6 +41,7 @@ const Posts = ({ navigation }) => {
                     temp.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                     setPosts(temp)
                     setisLoading(false)
+                    setIsFetching(false)
                 }
                 else {
                     setPosts([])
@@ -49,12 +51,8 @@ const Posts = ({ navigation }) => {
     };
     useEffect(() => {
         dataFunc();
-        return () => console.log("Clear")
+        // return () => 
     }, []);
-
-    const deleteTodo = id => {
-        database().ref(`users/${loginUser.uid}/posts`).child(id).remove();
-    };
 
     const skeleton = () => {
         return (
@@ -65,14 +63,19 @@ const Posts = ({ navigation }) => {
         )
     }
 
+    const onRefresh = () => {
+        setIsFetching(true)
+        dataFunc()
+    }
+
     return (
         <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]} >
             {isLoading ?
                 skeleton() :
                 posts.length > 0 ?
                     <FlatList
-                        refreshing
-                        onResponderStart={_ => dataFunc()}
+                        refreshing={isFetching}
+                        onRefresh={() => onRefresh()}
                         data={posts}
                         keyExtractor={(item) => item.key}
                         renderItem={({ item }) => <IndividualPost navigation={navigation} key={item.key} item={item} />}
