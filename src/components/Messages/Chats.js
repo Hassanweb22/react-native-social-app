@@ -34,7 +34,7 @@ const ChatScreen = (props) => {
                         createdAt: doc.data().createdAt.toDate()
                     })
                 })
-                console.log('messages', arr)
+                // console.log('messages', arr)
                 setMessages(arr);
             });
 
@@ -52,7 +52,7 @@ const ChatScreen = (props) => {
             sentTo: userKey,
             sentBy: currentUserUID,
         }
-        console.log("mymsg", myMesg)
+        // console.log("mymsg", myMesg)
         const combineID = userKey > currentUserUID ? userKey + "-" + currentUserUID : currentUserUID + "-" + userKey
         await firestore().collection("chatrooms").doc(combineID).collection("messages").add(myMesg).then(_ => console.log("message sent"))
     };

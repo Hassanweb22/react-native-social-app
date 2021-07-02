@@ -6,19 +6,29 @@ import Chats from "../components/Messages/Chats"
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Button } from 'native-base';
 import colors from '../colors/colors';
+import { getFocusedRouteNameFromRoute, ge } from '@react-navigation/native';
 
 
-const CustomMessageStack = () => {
+
+const CustomMessageStack = ({ navigation, route }) => {
     const Stack = createStackNavigator()
+    console.log("getFocusedRouteNameFromRoute", getFocusedRouteNameFromRoute(route))
+    if (getFocusedRouteNameFromRoute(route) !== "Messages") {
+        navigation.setOptions({ tabBarVisible: false, title: "false" })
+    }
+    else {
+        navigation.setOptions({ tabBarVisible: true })
+    }
     return (
-        <Stack.Navigator screenOptions={({ navigation, route }) => ({
-            headerStyle: {
-                backgroundColor: colors.green,
-            },
-            headerTintColor: "#fff",
-            headerTitleAlign: "center",
-
-        })}>
+        <Stack.Navigator screenOptions={({ navigation, route }) => {
+            return {
+                headerStyle: {
+                    backgroundColor: colors.green,
+                },
+                headerTintColor: "#fff",
+                headerTitleAlign: "center",
+            }
+        }}>
             <Stack.Screen options={({ navigation }) => ({
                 headerLeft: () => {
                     return (

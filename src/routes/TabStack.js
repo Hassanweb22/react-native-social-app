@@ -11,11 +11,6 @@ const TabStack = () => {
         <Stack.Navigator screenOptions={({ navigation, route }) => {
             let tabBarVisible = true;
 
-            let routeName = navigation.state.routes[navigation.state.index].routeName
-
-            if (routeName == 'Chat') {
-                tabBarVisible = false
-            }
             return {
                 tabBarVisible,
                 headerStyle: {

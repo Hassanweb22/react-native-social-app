@@ -13,6 +13,7 @@ import CustomMessageStack from '../../routes/CustomMessageStack'
 import colors from '../../colors/colors';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 
 const TabBar = () => {
@@ -37,17 +38,12 @@ const TabBar = () => {
             })} name="PostMy" component={StackPostMy} />
 
             <Tab.Screen options={({ navigation, route }) => {
-                console.log("route", route.state.routeNames[1])
-                let tabBarVisible = true;
+                // console.log("route", navigation, route.state)
+                console.log("routeName", route)
 
-                let routeName = route
-
-                if (route.state.routeNames[1] == 'Chat') {
-                    tabBarVisible = false
-                }
                 return {
                     tabBarIcon: ({ color, focused }) => <MaterialIcons name="message" size={22} color={color} />,
-                    tabBarVisible: tabBarVisible
+                    // tabBarVisible: tabBarVisible
                 }
             }} name="Contacts" component={CustomMessageStack} />
         </Tab.Navigator>

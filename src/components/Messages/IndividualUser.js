@@ -38,7 +38,7 @@ const IndividualUser = ({ user, userKey, navigation, currentUser }) => {
                         })
                     })
                     // console.log('invidaulmessages', arr[0])
-                    console.log('createdAt', moment(arr[0].createdAt).fromNow())
+                    // console.log('createdAt', moment(arr[0].createdAt).fromNow())
                     setLastMessage(arr[0]);
                     setLasttime(arr[0].createdAt);
                     setlastseen(arr[0].createdAt);
