@@ -11,11 +11,22 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Auth from "@react-native-firebase/auth"
 import { useDispatch } from "react-redux"
 import { loginUser } from '../store/actions/actions';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 
-function StackPosts() {
+function StackPosts({ navigation, route }) {
     const dispatch = useDispatch()
     const Stack = createStackNavigator()
+
+    React.useLayoutEffect(() => {
+        const routeName = getFocusedRouteNameFromRoute(route);
+        if (routeName === "comments" || routeName === "AddPost") {
+            navigation.setOptions({ tabBarVisible: false });
+        } else {
+            navigation.setOptions({ tabBarVisible: true });
+        }
+    }, [navigation, route]);
+
     return (
         <Stack.Navigator initialRouteName="AllPosts" screenOptions={({ route, navigation, focs }) => ({
             headerStyle: {

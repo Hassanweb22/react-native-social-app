@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import Messages from "../components/Messages/Users"
@@ -12,13 +12,15 @@ import { getFocusedRouteNameFromRoute, ge } from '@react-navigation/native';
 
 const CustomMessageStack = ({ navigation, route }) => {
     const Stack = createStackNavigator()
-    console.log("getFocusedRouteNameFromRoute", getFocusedRouteNameFromRoute(route))
-    if (getFocusedRouteNameFromRoute(route) !== "Messages") {
-        navigation.setOptions({ tabBarVisible: false, title: "false" })
-    }
-    else {
-        navigation.setOptions({ tabBarVisible: true })
-    }
+    React.useLayoutEffect(() => {
+        const routeName = getFocusedRouteNameFromRoute(route);
+        if (routeName === "Chat") {
+            navigation.setOptions({ tabBarVisible: false });
+        } else {
+            navigation.setOptions({ tabBarVisible: true });
+        }
+    }, [navigation, route]);
+
     return (
         <Stack.Navigator screenOptions={({ navigation, route }) => {
             return {
@@ -45,9 +47,12 @@ const CustomMessageStack = ({ navigation, route }) => {
                 }
             })}
                 name="Messages" component={Messages} />
-            <Stack.Screen options={({ route }) => ({
-                headerTitle: route.params.title
-            })}
+            <Stack.Screen options={({ route }) => {
+
+                return {
+                    headerTitle: route.params.title
+                }
+            }}
                 name="Chat" component={Chats} />
         </Stack.Navigator>
     )

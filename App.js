@@ -26,7 +26,7 @@ const App = () => {
 
   const Stack = createStackNavigator();
 
-  useEffect(() => {
+  const unsubscribe = () => {
     Auth().onAuthStateChanged(user => {
       if (user) {
         // console.log("userLogin", user)
@@ -35,7 +35,11 @@ const App = () => {
         setState({ ...state, login: false });
       }
     });
-    return () => console.log("user loged in")
+  }
+
+  useEffect(() => {
+    unsubscribe()
+    return () => unsubscribe
   }, []);
 
   function MyStackSigninNavigator() {
@@ -71,8 +75,8 @@ const App = () => {
   return (
     <>
       <Provider store={store} >
-
         <PersistGate loading={null} persistor={persistor}>
+          <StatusBar barStyle="light-content" />
           <SafeAreaProvider>
             <NavigationContainer>
               {state.login ? <MyDrawerNavigator /> : <MyStackSigninNavigator />}

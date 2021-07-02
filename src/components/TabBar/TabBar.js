@@ -14,19 +14,44 @@ import colors from '../../colors/colors';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 
 const TabBar = () => {
     const Tab = createBottomTabNavigator();
+    const isDark = useSelector(state => state.todo.dark);
+
 
     return (
         <Tab.Navigator
             tabBarOptions={{
-                activeTintColor: colors.green,
-                inactiveTintColor: "black"
+                activeTintColor: "#fff",
+                inactiveTintColor: "black",
+                keyboardHidesTabBar: true,
+                // showLabel: false,
+                style: {
+                    position: "absolute",
+                    margin: 20,
+                    borderRadius: 10,
+                    height: 70,
+                    backgroundColor: colors.green,
+                    padding: 10,
+                    paddingBottom: 12,
+                    shadowColor: isDark ? "#fff" : "#000",
+                    shadowOffset: {
+                        width: -2,
+                        height: -2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 10,
+                    elevation: 5,
+                },
+                safeAreaInsets: {
+                    top: 90
+                }
+
             }} screenOptions={({ navigation, route }) => {
                 return {
-                    tabBarVisible: true,
                 }
             }}>
             <Tab.Screen options={({ navigation, route }) => ({
@@ -34,16 +59,14 @@ const TabBar = () => {
             })} name="PostAll" component={StackPostsAll} />
 
             <Tab.Screen options={({ navigation, route }) => ({
-                tabBarIcon: ({ color, focused }) => <Icon name="list" size={22} color={color} />
+                tabBarLabel: "My Post",
+                tabBarIcon: ({ color, focused }) => <Icon name="user" size={22} color={color} />
             })} name="PostMy" component={StackPostMy} />
 
             <Tab.Screen options={({ navigation, route }) => {
-                // console.log("route", navigation, route.state)
-                console.log("routeName", route)
-
+                // console.log("customroutes", route)
                 return {
                     tabBarIcon: ({ color, focused }) => <MaterialIcons name="message" size={22} color={color} />,
-                    // tabBarVisible: tabBarVisible
                 }
             }} name="Contacts" component={CustomMessageStack} />
         </Tab.Navigator>
