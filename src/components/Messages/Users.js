@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Body, Card, CardItem, Container, Left, List, ListItem, Text, Thumbnail } from 'native-base'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StatusBar, StyleSheet, View } from 'react-native'
 import database from '@react-native-firebase/database';
 import { useSelector } from 'react-redux';
 import colors from '../../colors/colors';
@@ -32,6 +32,7 @@ const Users = ({ navigation }) => {
 
     return (
         <Container style={{ flex: 1, padding: 10, borderWidth: 0, borderColor: "green", backgroundColor: isDark ? colors.dark : "#fff" }}>
+            <StatusBar barStyle="light-content" backgroundColor={colors.green} />
             {/* <CardItem header style={{ justifyContent: "center" }}>
                 <Text style={{ color: "green", fontWeight: "bold" }}>Messages</Text>
             </CardItem> */}

@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   Container,
-  Title,
-  Button,
-  Content,
   Card,
-  CardItem,
   Text,
-  Form,
-  Item,
-  Input,
-  Label,
-  Body,
+
 } from 'native-base';
-import { View, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { View, StyleSheet, StatusBar, TouchableOpacity, ActivityIndicator } from 'react-native';
 import MyFooter from '../Footer/Footer';
-import MyHeader from '../Header/Header';
 import { useSelector } from 'react-redux';
 
 import Auth from '@react-native-firebase/auth';
@@ -27,18 +17,22 @@ const HomeScreen = ({ navigation }) => {
   const data = { name: 'hassan', email: 'hasso@gmail.com', age: 22 };
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
   const isDark = useSelector(state => state.todo.dark);
+  const [Loading, setIsLoading] = useState(false);
 
   const [user, setUser] = useState({});
 
   useEffect(() => {
     if (currentUserUID) {
+      setIsLoading(true)
       Database()
         .ref('users')
         .child(currentUserUID)
         .on('value', snap => {
           setUser(snap.val());
+          setIsLoading(false)
         });
     } else {
+      setIsLoading(false)
       console.log('no user');
     }
   }, []);
@@ -48,30 +42,32 @@ const HomeScreen = ({ navigation }) => {
     <Container>
       <StatusBar barStyle="light-content" backgroundColor={colors.green} />
       <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]}>
-        <Card style={styles.card}>
-          <View style={styles.cardView}>
-            <Text style={styles.welcomeTitle}>
-              Welcome Dear {user?.firstname}!
-            </Text>
-          </View>
-          <View>
-            <Text style={{ textAlign: 'center' }}>
-              You can Create Posts Like it comment it and can Chat with others users
-            </Text>
-          </View>
-          <View style={styles.bottomLinks}>
-            <TouchableOpacity
-              style={styles.bottomLink}
-              onPress={_ => navigation.openDrawer()}>
-              <Text style={styles.bottomLinkText}>Open Drawer</Text>
-            </TouchableOpacity>
-            {/* <TouchableOpacity
+        {Loading ?
+          <ActivityIndicator size="large" color={isDark ? "lightgreen" : "#000"} /> :
+          <Card style={styles.card}>
+            <View style={styles.cardView}>
+              <Text style={styles.welcomeTitle}>
+                Welcome Dear {user?.firstname}!
+              </Text>
+            </View>
+            <View>
+              <Text style={{ textAlign: 'center' }}>
+                You can Create Posts Like it comment it and can Chat with others users
+              </Text>
+            </View>
+            <View style={styles.bottomLinks}>
+              <TouchableOpacity
+                style={styles.bottomLink}
+                onPress={_ => navigation.openDrawer()}>
+                <Text style={styles.bottomLinkText}>Open Drawer</Text>
+              </TouchableOpacity>
+              {/* <TouchableOpacity
               style={styles.bottomLink}
               onPress={_ => navigation.navigate('Posts')}>
               <Text style={styles.bottomLinkText}>Check Posts</Text>
             </TouchableOpacity> */}
-          </View>
-        </Card>
+            </View>
+          </Card>}
       </Container>
       <MyFooter color="#5CB85C" />
     </Container>

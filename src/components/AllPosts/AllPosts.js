@@ -70,15 +70,17 @@ const Posts = ({ navigation }) => {
 
     return (
         <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]} >
+            <StatusBar barStyle="light-content" backgroundColor={colors.green} />
             {isLoading ?
                 skeleton() :
                 posts.length > 0 ?
                     <FlatList
+                        // style={{ borderWidth: 0, borderColor: "green", marginBottom: 0 }}
                         refreshing={isFetching}
                         onRefresh={() => onRefresh()}
                         data={posts}
                         keyExtractor={(item) => item.key}
-                        renderItem={({ item }) => <IndividualPost navigation={navigation} key={item.key} item={item} />}
+                        renderItem={({ item }) => <IndividualPost navigation={navigation} key={item} item={item} />}
                     />
                     :
                     <Container style={{
@@ -96,12 +98,12 @@ export default Posts;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        flexDirection: 'column',
-        // borderWidth: 0,
+        // borderWidth: 2,
+        // borderColor: "red",
+        height: 100
         // justifyContent: 'center',
         // marginHorizontal: 10,
-        // borderColor: "red",
+
     },
     cardContainer: {
         flex: 1,

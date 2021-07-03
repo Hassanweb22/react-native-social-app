@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
-  StatusBar,
+  StatusBar, SafeAreaView
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, HeaderTitle } from '@react-navigation/stack';
@@ -17,6 +17,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store/store';
 import MyDrawerNavigator from './src/routes/DraweNavigator';
 import Toast from 'react-native-toast-message';
+import colors from './src/colors/colors';
+
+const THEME_COLOR = colors.green;
+
 
 const App = () => {
   const initialState = {
@@ -38,8 +42,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    unsubscribe()
-    return () => unsubscribe
+    return unsubscribe()
   }, []);
 
   function MyStackSigninNavigator() {
@@ -76,12 +79,13 @@ const App = () => {
     <>
       <Provider store={store} >
         <PersistGate loading={null} persistor={persistor}>
-          <StatusBar barStyle="light-content" />
-          <SafeAreaProvider>
+          {/* <SafeAreaView style={[styles.topSafeArea]} /> */}
+          <SafeAreaView style={styles.bottomSafeArea}>
+            <StatusBar barStyle="light-content" backgroundColor={colors.green} />
             <NavigationContainer>
               {state.login ? <MyDrawerNavigator /> : <MyStackSigninNavigator />}
             </NavigationContainer>
-          </SafeAreaProvider>
+          </SafeAreaView>
         </PersistGate>
       </Provider>
       <Toast ref={(ref) => Toast.setRef(ref)} />
@@ -100,5 +104,13 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
+  },
+  topSafeArea: {
+    flex: 0,
+    backgroundColor: THEME_COLOR
+  },
+  bottomSafeArea: {
+    flex: 1,
+    backgroundColor: THEME_COLOR
   },
 });

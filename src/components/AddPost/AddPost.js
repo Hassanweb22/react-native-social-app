@@ -120,6 +120,7 @@ const TodoForm = ({ navigation, todos }) => {
           }
           else {
             !state.photo && setState(initialState);
+            navigation.goBack()
           }
           // console.log('posts submitted');
         });

@@ -90,7 +90,7 @@ export default function MyDrawerNavigator() {
         name="Home"
         component={DashboardAndProfileStack}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         options={{
           drawerIcon: ({ color, focused, size }) => (
             <Icon name="list" size={size} color={color} />
@@ -99,8 +99,8 @@ export default function MyDrawerNavigator() {
         }}
         name="MyPosts"
         component={StackPostMy}
-      />
-      <Drawer.Screen
+      /> */}
+      {/* <Drawer.Screen
         options={{
           drawerIcon: ({ color, focused, size }) => (
             <Icon name="list" size={size} color={color} />
@@ -120,7 +120,7 @@ export default function MyDrawerNavigator() {
         }}
         name="messages"
         component={CustomMessageStack}
-      />
+      /> */}
       <Drawer.Screen
         options={{
           drawerIcon: ({ color, focused, size }) => (

@@ -62,6 +62,7 @@ const Posts = ({ navigation }) => {
 
     return (
         <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]} >
+            <StatusBar barStyle="light-content" backgroundColor={colors.green} />
             {isLoading ?
                 skeleton() :
                 posts.length ?

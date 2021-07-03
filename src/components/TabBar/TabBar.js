@@ -1,6 +1,6 @@
 import { Container, Content, Tab, Text, TabHeading, Tabs } from 'native-base'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
@@ -30,17 +30,21 @@ const TabBar = () => {
                 keyboardHidesTabBar: true,
                 // showLabel: false,
                 style: {
-                    position: "absolute",
-                    margin: 20,
-                    borderRadius: 10,
-                    height: 70,
+                    // position: "relative",
+                    borderTopWidth: 0,
+                    // margin: 20,
+                    // marginVertical: (Platform.OS === 'ios') ? 20 : 10,
+                    // marginBottom: 0,
+                    // borderRadius: 10,
+                    // paddingHorizontal: 10,
+                    paddingBottom: 7,
+                    paddingTop: 7,
+                    height: 55,
                     backgroundColor: colors.green,
-                    padding: 10,
-                    paddingBottom: 12,
                     shadowColor: isDark ? "#fff" : "#000",
                     shadowOffset: {
                         width: -2,
-                        height: -2,
+                        height: 2,
                     },
                     shadowOpacity: 0.25,
                     shadowRadius: 10,
@@ -66,6 +70,7 @@ const TabBar = () => {
             <Tab.Screen options={({ navigation, route }) => {
                 // console.log("customroutes", route)
                 return {
+                    tabBarVisible: false,
                     tabBarIcon: ({ color, focused }) => <MaterialIcons name="message" size={22} color={color} />,
                 }
             }} name="Contacts" component={CustomMessageStack} />
