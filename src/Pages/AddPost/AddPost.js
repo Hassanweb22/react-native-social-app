@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Container, Button, Card, CardItem, Text, Form, Item, Input, Label } from 'native-base';
-import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import MyHeader from '../Header/Header';
-import MyFooter from '../Footer/Footer';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import database from '@react-native-firebase/database';
-import auth, { firebase } from '@react-native-firebase/auth';
-import storage from '@react-native-firebase/storage';
+import { firebase } from '@react-native-firebase/auth';
 import { useSelector } from 'react-redux';
-import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import moment from "moment"
 import colors from '../../colors/colors';
+import { requestCameraPermission, requestStoargePermission } from "../../ImagePickerActions/Actions"
 
 const TodoForm = ({ navigation, todos }) => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
@@ -20,6 +17,7 @@ const TodoForm = ({ navigation, todos }) => {
   const initialState = {
     title: '',
     photo: null,
+    photoCamera: null,
     photoURL: null
   };
   const initialError = {
@@ -36,33 +34,6 @@ const TodoForm = ({ navigation, todos }) => {
     setState({ ...state, [name]: value });
   };
 
-
-  const imageHandler = () => {
-    let options = {
-      title: 'Select Image',
-      customButtons: [
-        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-      ],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    launchImageLibrary(options, response => {
-      // console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else if (response.assets) {
-        setState({ ...state, photo: response.assets[0] });
-      }
-    });
-  };
 
   const imageUpload = async (postKey) => {
     const usersProfile = firebase.storage().ref(`usersProfile/${currentUserUID}/posts`);
@@ -95,7 +66,7 @@ const TodoForm = ({ navigation, todos }) => {
           })
           setState({ ...state, photoURL: downloadURL })
         }).catch(err => console.log(err));
-        setState({ ...state, photo: null, title: "" })
+        setState({ ...state, photo: null, photoURL: null, title: "" })
         setProgress(0)
       },
     );
@@ -131,12 +102,29 @@ const TodoForm = ({ navigation, todos }) => {
     return state.title ? true : false;
   };
 
+  const askAlert = () => {
+    Alert.alert(
+      "Take Photos",
+      "Select one of the following",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Launch Library", onPress: () => requestStoargePermission(state, setState) },
+        { text: "Launch Camera", onPress: () => requestCameraPermission(state, setState) }
+      ]
+    );
+  }
+
+
   return (
     <Container >
       <Container style={[styles.container, { backgroundColor: isDark ? colors.dark : "#fff" }]}>
         <KeyboardAvoidingScrollView>
           <Card style={styles.card}>
-            <CardItem bordered>
+            {/* <CardItem >
               <Text
                 style={{
                   flex: 1,
@@ -147,19 +135,21 @@ const TodoForm = ({ navigation, todos }) => {
                 }}>
                 Add New
               </Text>
-            </CardItem>
-            <View style={{ marginHorizontal: 10 }}>
+            </CardItem> */}
+            <View style={{ marginHorizontal: 5 }}>
               <Form>
-                <Item>
+                <Item rounded style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
                   <Label style={{ fontWeight: 'bold' }}>Title</Label>
                   <Input
+                    style={{ paddingBottom: 5 }}
+                    multiline
                     value={state.title}
                     onChangeText={text => onChangeText(text, 'title')}
                   />
                 </Item>
               </Form>
               <View
-                style={{ marginVertical: 20, marginHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+                style={{ marginVertical: 20, marginHorizontal: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
                 <TouchableOpacity
                   style={{
                     padding: 5,
@@ -167,7 +157,7 @@ const TodoForm = ({ navigation, todos }) => {
                     borderWidth: 1,
                     borderRadius: 10,
                   }}
-                  onPress={imageHandler}>
+                  onPress={askAlert}>
                   <Text style={{ fontSize: 15 }}>Upload Image</Text>
                 </TouchableOpacity>
                 <Text style={{ maxWidth: '60%' }} note>
@@ -206,8 +196,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     padding: 5,
-    borderWidth: 1,
-    borderColor: 'green',
+    // borderWidth: 1,
+    // borderColor: 'green',
   },
   card: {
     elevation: 5,

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Body, Card, CardItem, Container, Left, List, ListItem, Right, Text, Thumbnail } from 'native-base'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import LoadingView from '../UpdateProfile/LoadingView';
+import LoadingView from '../../components/LoadingView/LoadingView';
 import { useSelector } from 'react-redux';
 import colors from '../../colors/colors';
-import firebase from "@react-native-firebase/app"
 import firestore from "@react-native-firebase/firestore"
 import moment from 'moment';
 
@@ -37,8 +36,6 @@ const IndividualUser = ({ user, userKey, navigation, currentUser }) => {
                             createdAt: doc.data().createdAt.toDate()
                         })
                     })
-                    // console.log('invidaulmessages', arr[0])
-                    // console.log('createdAt', moment(arr[0].createdAt).fromNow())
                     setLastMessage(arr[0]);
                     setLasttime(arr[0].createdAt);
                     setlastseen(arr[0].createdAt);

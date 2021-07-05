@@ -1,22 +1,6 @@
 import React, { useState, useEffect } from 'react';
-// import Icon from 'react-native-vector-icons/FontAwesome';
+import { Container, Content, Button, Card, CardItem, Text, Form, Item, Input, Label, View, } from 'native-base';
 import {
-  Container,
-  Content,
-  Button,
-  Card,
-  CardItem,
-  Text,
-  Form,
-  Item,
-  Input,
-  Label,
-  View,
-  Icon,
-} from 'native-base';
-import { Grid, Row, Col } from 'react-native-easy-grid';
-import {
-  SafeAreaView,
   StyleSheet,
   Image,
   Keyboard,
@@ -24,7 +8,6 @@ import {
   TouchableOpacity,
   Alert,
   ImageBackground,
-  StatusBar,
 } from 'react-native';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import Auth from '@react-native-firebase/auth';
@@ -40,21 +23,7 @@ const ForgetPassword = ({ navigation }) => {
     access: '',
   };
   const [state, setState] = useState(initialState);
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState(initialErrors);
-
-  useEffect(() => {
-    const unsubscribe = Auth().onAuthStateChanged(user => {
-      if (user) {
-        console.log("'sigin user", user);
-      } else {
-        console.log('user not signin', user);
-      }
-    });
-
-    // Unsubscribe from further state changes
-    // return unsubscribe();
-  }, []);
 
   const onchange = (text, name) => {
     setState({ ...state, [name]: text });
@@ -101,18 +70,6 @@ const ForgetPassword = ({ navigation }) => {
                     source={require('../../images/user.png')}
                   />
                 </View>
-
-                {/* <CardItem
-                  style={{flex: 1, justifyContent: 'center', fontSize: 20}}>
-                  <Text
-                    style={{
-                      color: '#4DAD4A',
-                      fontSize: 25,
-                      fontWeight: 'bold',
-                    }}>
-                    Fore
-                  </Text>
-                </CardItem> */}
                 <View style={{ marginHorizontal: 10, marginTop: 50 }}>
                   <Form>
                     <View>

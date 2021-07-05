@@ -1,13 +1,13 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
-import Messages from "../components/Messages/Users"
-import Chats from "../components/Messages/Chats"
+import Messages from "../Pages/Messages/Users"
+import Chats from "../Pages/Messages/Chats"
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { Button, Thumbnail } from 'native-base';
+import { Thumbnail } from 'native-base';
 import colors from '../colors/colors';
-import { getFocusedRouteNameFromRoute, ge } from '@react-navigation/native';
-import LoadingView from '../components/UpdateProfile/LoadingView';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import LoadingView from '../components/LoadingView/LoadingView';
 
 
 
@@ -61,7 +61,6 @@ const CustomMessageStack = ({ navigation, route }) => {
                         return (
                             <TouchableOpacity activeOpacity={0.7}
                                 onPress={() => {
-                                    // console.log("chats routes.params", photoURL)
                                     navigation.navigate('Messages')
                                 }}
                                 style={{

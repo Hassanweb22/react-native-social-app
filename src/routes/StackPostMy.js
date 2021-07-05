@@ -1,14 +1,12 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
-import MyPosts from '../components/MyPosts/MyPosts';
-import AddPost from '../components/AddPost/AddPost';
-import IndividualPost from '../components/AllPosts/IndividualPost';
-import Comments from '../components/Comments/Comments';
+import MyPosts from '../Pages/MyPosts/MyPosts';
+import AddPost from '../Pages/AddPost/AddPost';
+import Comments from '../Pages/Comments/Comments';
 import colors from '../colors/colors';
 import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import Auth from "@react-native-firebase/auth"
 import { useDispatch } from "react-redux"
 import { loginUser } from '../store/actions/actions';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';

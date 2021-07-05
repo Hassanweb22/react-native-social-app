@@ -6,10 +6,8 @@ import {
 
 } from 'native-base';
 import { View, StyleSheet, StatusBar, TouchableOpacity, ActivityIndicator } from 'react-native';
-import MyFooter from '../Footer/Footer';
+import MyFooter from '../../components/Footer/Footer';
 import { useSelector } from 'react-redux';
-
-import Auth from '@react-native-firebase/auth';
 import Database from '@react-native-firebase/database';
 import colors from '../../colors/colors';
 

@@ -1,15 +1,16 @@
 import 'react-native-gesture-handler';
+import SplashScreen from 'react-native-splash-screen'
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
-  StatusBar, SafeAreaView
+  StatusBar, SafeAreaView, Platform
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, HeaderTitle } from '@react-navigation/stack';
 
-import SignIn from './src/components/Sigin/Sigin';
-import Signup from './src/components/Signup/Signup';
-import ForgetPassword from './src/components/ForgetPassword/ForgetPassword';
+import SignIn from './src/Pages/Sigin/Sigin';
+import Signup from './src/Pages/Signup/Signup';
+import ForgetPassword from './src/Pages/ForgetPassword/ForgetPassword';
 import Auth from '@react-native-firebase/auth';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider, useSelector, useDispatch } from 'react-redux';
@@ -48,9 +49,12 @@ const App = () => {
   function MyStackSigninNavigator() {
     const todoState = useSelector(state => state.todo);
 
-    // useEffect(() => {
-    //   console.log('todoState', todoState);
-    // }, []);
+    useEffect(() => {
+      console.log('todoState', todoState);
+      SplashScreen.hide()
+    }, []);
+
+
     return (
       <Stack.Navigator
         screenOptions={{
@@ -79,13 +83,12 @@ const App = () => {
     <>
       <Provider store={store} >
         <PersistGate loading={null} persistor={persistor}>
-          {/* <SafeAreaView style={[styles.topSafeArea]} /> */}
-          <SafeAreaView style={styles.bottomSafeArea}>
-            <StatusBar barStyle="light-content" backgroundColor={colors.green} />
-            <NavigationContainer>
-              {state.login ? <MyDrawerNavigator /> : <MyStackSigninNavigator />}
-            </NavigationContainer>
-          </SafeAreaView>
+          {Platform.OS === "android" ? <SafeAreaView style={[styles.topSafeArea,
+          { backgroundColor: colors.green }]} /> : null}
+          <StatusBar barStyle="light-content" backgroundColor={Platform.OS === "ios" ? "transparent" : colors.green} />
+          <NavigationContainer>
+            {state.login ? <MyDrawerNavigator /> : <MyStackSigninNavigator />}
+          </NavigationContainer>
         </PersistGate>
       </Provider>
       <Toast ref={(ref) => Toast.setRef(ref)} />
@@ -107,7 +110,6 @@ const styles = StyleSheet.create({
   },
   topSafeArea: {
     flex: 0,
-    backgroundColor: THEME_COLOR
   },
   bottomSafeArea: {
     flex: 1,

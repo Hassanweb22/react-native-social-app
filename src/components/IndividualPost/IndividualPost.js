@@ -5,7 +5,7 @@ import { Body, Card, Text, CardItem, Content, Left, Thumbnail, Button, Container
 import Icon from "react-native-vector-icons/FontAwesome5"
 import database from '@react-native-firebase/database'
 import storage from '@react-native-firebase/storage'
-import LoadingView from '../UpdateProfile/LoadingView'
+import LoadingView from '../../components/LoadingView/LoadingView'
 import { useSelector } from 'react-redux'
 import Toast, { BaseToast } from 'react-native-toast-message';
 import moment from 'moment'

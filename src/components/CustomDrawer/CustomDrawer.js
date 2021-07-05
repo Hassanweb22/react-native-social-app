@@ -1,32 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import MyColors from '../../colors/colors';
-import Animated from 'react-native-reanimated';
-import {
-  Container,
-  Icon,
-  Text,
-  Header,
-  List,
-  ListItem,
-  Thumbnail, Left,
-  Right,
-  Content,
-  Body,
-  H3,
-  Footer,
-  FooterTab,
-  Button,
-} from 'native-base';
+import { Container, Icon, Text, Header, ListItem, Thumbnail, Left, Right, Content, Body, Footer, FooterTab, Button } from 'native-base';
 import {
   DrawerItem, DrawerItemList, DrawerContentScrollView, DrawerView
 } from '@react-navigation/drawer';
+
 import VectorIcon from "react-native-vector-icons/AntDesign"
 import { useDispatch, useSelector } from "react-redux"
 import database from "@react-native-firebase/database"
 import auth from "@react-native-firebase/auth"
 import storage from "@react-native-firebase/storage"
-import LoadingView from "../UpdateProfile/LoadingView"
+import LoadingView from "../../components/LoadingView/LoadingView"
 import { loginUser, setScreenColor } from '../../store/actions/actions';
 import colors from '../../colors/colors';
 

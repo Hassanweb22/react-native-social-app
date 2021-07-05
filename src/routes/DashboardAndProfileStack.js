@@ -5,8 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import colors from '../colors/colors';
 
-import HomeScreen from '../components/HomeScreen/HomeScreen';
-import UpdateProfile from '../components/UpdateProfile/UpdateProfile';
+import HomeScreen from '../Pages/HomeScreen/HomeScreen';
+import UpdateProfile from '../Pages/UpdateProfile/UpdateProfile';
 
 const DashboardAndProfileStack = () => {
     const Stack = createStackNavigator()
@@ -26,7 +26,6 @@ const DashboardAndProfileStack = () => {
                                 size={25}
                                 color={'#fff'}
                                 onPress={() => {
-                                    console.log("Dashboard Header Right button")
                                     navigation.navigate("Profile")
                                 }}
                             />

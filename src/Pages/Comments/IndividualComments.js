@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Alert, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native'
-import { Body, Card, CardItem, Container, Content, Form, Input, Item, Left, Right, Text, Thumbnail } from "native-base"
-import LoadingView from '../UpdateProfile/LoadingView'
+import { Body, Card, CardItem, Input, Item, Left, Right, Text, Thumbnail } from "native-base"
+import LoadingView from '../../components/LoadingView/LoadingView'
 import database from '@react-native-firebase/database'
 import colors from '../../colors/colors'
 import Icon from "react-native-vector-icons/FontAwesome5"

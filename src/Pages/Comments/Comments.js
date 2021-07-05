@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View, Image, ActivityIndicator } from 'react-native'
-import { Body, Button, Card, CardItem, Container, Content, Form, Input, Item, Label, Text } from "native-base"
+import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View, } from 'react-native'
+import { CardItem, Container, Form, Input, Item, Label, Text } from "native-base"
 import IndividualComments from './IndividualComments'
 import Icon from 'react-native-vector-icons/Ionicons';
 import colors from '../../colors/colors';
 import { useSelector } from 'react-redux';
 import database from "@react-native-firebase/database"
 import moment from "moment"
-import CommentLoading from '../SkeletonLoading/CommentLoading';
+import CommentLoading from '../../components/SkeletonLoading/CommentLoading';
 const Comments = ({ route }) => {
     const { item } = route.params
 

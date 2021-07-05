@@ -90,6 +90,8 @@ project.ext.vectoricons = [
     iconFontNames: ["AntDesign.ttf", 'MaterialIcons.ttf', 'EvilIcons.ttf', "FontAwesome.ttf","FontAwesome5_Regular.ttf","FontAwesome5_Brands.ttf","FontAwesome5_Solid.ttf" ] // Name of the font files you want to copy
 ]
 
+
+
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -202,6 +204,8 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-splash-screen')
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules

@@ -4,19 +4,17 @@ import {
   Container, Content, Button, Card, CardItem, Text, Form, Item, Input, Label, Body, Thumbnail,
 } from 'native-base';
 import MyColors from '../../colors/colors';
-import { View, StyleSheet, TouchableOpacity, ImagePickerIOS, SafeAreaView, Dimensions, PermissionsAndroid, Alert, Permission, Platform } from 'react-native';
-import MyHeader from '../Header/Header';
-import MyFooter from '../Footer/Footer';
+import { View, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert, Permission, Platform } from 'react-native';
+import MyFooter from '../../components/Footer/Footer';
 import { KeyboardAvoidingScrollView } from 'react-native-keyboard-avoiding-scroll-view';
 import firebase from '@react-native-firebase/app';
 import database from '@react-native-firebase/database';
-import auth from '@react-native-firebase/auth';
-import storage from '@react-native-firebase/storage';
 import { useSelector } from 'react-redux';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import PhotoModal from "./PhotoModal"
 import colors from '../../colors/colors';
 import Toast from 'react-native-toast-message';
+import { requestStoargePermission, requestCameraPermission, } from "../../ImagePickerActions/Actions"
 
 const UpdateProfile = () => {
   const currentUserUID = useSelector(state => state.todo.loginUser.uid);
@@ -43,7 +41,6 @@ const UpdateProfile = () => {
   const [errors, setError] = useState(initialError);
 
 
-
   useEffect(() => {
     database().ref(`users/${currentUserUID}`).on("value", data => {
       if (data.exists()) {
@@ -62,114 +59,6 @@ const UpdateProfile = () => {
     return user.firstname !== state.fname || user.lastname !== state.lname || user.occupation !== state.occupation
   }
 
-  const imageHandler = () => {
-    let options = {
-      title: 'Select Image',
-      customButtons: [
-        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-      ],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    launchImageLibrary({}, response => {
-      console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else if (response.assets) {
-        setState({ ...state, photo: response.assets[0] });
-      }
-    });
-  };
-
-
-  const cameraHandler = () => {
-    let options = {
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-    launchCamera({
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    }, (response) => {
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-        alert(response.customButton);
-      } else {
-        const source = { uri: response.uri };
-        console.log('response', response.assets[0]);
-        setState({ ...state, photoCamera: response.assets[0] })
-      }
-    });
-
-  }
-
-  const handleCameraPermission = async () => {
-    const res = await check(PERMISSIONS.IOS.CAMERA);
-
-    if (res === RESULTS.GRANTED) {
-      setCameraGranted(true);
-    } else if (res === RESULTS.DENIED) {
-      const res2 = await request(PERMISSIONS.IOS.CAMERA);
-      res2 === RESULTS.GRANTED
-        ? setCameraGranted(true)
-        : setCameraGranted(false);
-    }
-  };
-
-
-  const requestCameraPermission = async () => {
-    if (Platform.OS === "ios") {
-      return cameraHandler();
-    }
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log("You can use the camera");
-        cameraHandler()
-      } else {
-        console.log("Camera permission denied");
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
-
-  const downloadFile = async () => {
-    if (Platform.OS === "ios") {
-      return imageHandler();
-    }
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        imageHandler()
-      } else {
-        console.log("permissions storage denied")
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  }
 
   const imageUpload = () => {
     const usersProfile = firebase.storage().ref(`usersProfile/${currentUserUID}/profilePhoto`);
@@ -191,12 +80,11 @@ const UpdateProfile = () => {
         }
       },
       err => {
-        console.log('error', err);
+        console.error('error', err);
         setError({ ...errors, photo: err })
       },
       () => {
         uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-          console.log('File available at', downloadURL);
           database().ref(`users/${currentUserUID}`).child("photoURL").set(downloadURL).then(_ => {
             Toast.show({
               type: "success",
@@ -241,7 +129,6 @@ const UpdateProfile = () => {
           text1: 'Update',
           text2: 'Your Profile has been Updated 👍'
         });
-        console.log('successfully updated');
         // setState(initialState);
       }
     });
@@ -262,8 +149,8 @@ const UpdateProfile = () => {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { text: "Launch Library", onPress: () => downloadFile() },
-        { text: "Launch Camera", onPress: () => requestCameraPermission() }
+        { text: "Launch Library", onPress: () => requestStoargePermission(state, setState) },
+        { text: "Launch Camera", onPress: () => requestCameraPermission(state, setState) }
       ]
     );
   }
