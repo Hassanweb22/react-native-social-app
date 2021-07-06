@@ -38,7 +38,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    SplashScreen.hide()
+    Platform.OS === "android" && SplashScreen.hide()
     return unsubscribe()
   }, []);
 
