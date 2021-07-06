@@ -4,15 +4,11 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from "react-native-vector-icons/Ionicons"
 import { Button } from 'native-base';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import MyColors from '../colors/colors';
-import CustomDrawerContent from '../components/CustomDrawer/CustomDrawer';
-import StackPostsAll from './StackPostsAll';
-import StackPostMy from './StackPostMy';
-import CustomMessageStack from './CustomMessageStack';
-import DashboardAndProfileStack from "./DashboardAndProfileStack"
+import MyColors from '../../../colors/colors';
+import CustomDrawerContent from '../../../components/CustomDrawer/CustomDrawer';
+import DashboardAndProfileStack from "../../StackNavigators/DashboardAndProfileStack"
 import { Platform } from 'react-native';
-import TabBar from '../components/TabBar/TabBar';
-import CustomTabBar from './CustomTabNavigator/CustomTabNavigator';
+import BottomTabNavigator from '../BottomTabNavigator/BottomTabNavigator';
 
 
 export default function MyDrawerNavigator() {
@@ -21,13 +17,13 @@ export default function MyDrawerNavigator() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('todoState', todoState);
+
+    // console.log('todoState', todoState);
   }, []);
 
   return (
     <Drawer.Navigator
       drawerContent={({ ...props }) => <CustomDrawerContent {...props} />}
-      // hideStatusBar={Platform.OS === 'ios' ? true : false}
       statusBarAnimation="fade"
       drawerContentOptions={{
         activeBackgroundColor: "#c0edc1",
@@ -116,14 +112,14 @@ export default function MyDrawerNavigator() {
       /> */}
       <Drawer.Screen
         options={{
-          drawerIcon: ({ color, focused, size }) => (
+          drawerIcon: ({ color, size }) => (
             <Ionicons name="options" size={size} color={color} />
           ),
           drawerLabel: 'Tabs',
           headerShown: false
         }}
         name="TabStack"
-        component={TabBar}
+        component={BottomTabNavigator}
       />
     </Drawer.Navigator >
   );

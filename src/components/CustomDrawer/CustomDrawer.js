@@ -10,7 +10,6 @@ import VectorIcon from "react-native-vector-icons/AntDesign"
 import { useDispatch, useSelector } from "react-redux"
 import database from "@react-native-firebase/database"
 import auth from "@react-native-firebase/auth"
-import storage from "@react-native-firebase/storage"
 import LoadingView from "../../components/LoadingView/LoadingView"
 import { loginUser, setScreenColor } from '../../store/actions/actions';
 import colors from '../../colors/colors';
@@ -25,8 +24,8 @@ const CustomDrawer = ({ progress, ...props }) => {
 
   const [user, setUser] = useState({})
   const [imageLoad, setImageLoad] = useState(false);
-
   const [isEnabled, setIsEnabled] = useState(false);
+
   const toggleSwitch = () => {
     setIsEnabled(!isEnabled)
     dispatch(setScreenColor(!isEnabled))
@@ -62,15 +61,18 @@ const CustomDrawer = ({ progress, ...props }) => {
       {!!Object.keys(user).length &&
         <ListItem thumbnail>
           <Left>
-            <Thumbnail source={{ uri: user?.photoURL ? user?.photoURL : uri }}
-              onLoadStart={() => {
-                return setImageLoad(true)
-              }}
-              onLoadEnd={_ => {
-                setImageLoad(false)
-              }}
-            />
-            {imageLoad && <LoadingView />}
+            <TouchableOpacity onPress={_ => props.navigation.navigate("Profile")}>
+              <Thumbnail source={{ uri: user?.photoURL ? user?.photoURL : uri }}
+                onLoadStart={() => {
+                  return setImageLoad(true)
+                }}
+                onLoadEnd={_ => {
+                  setImageLoad(false)
+                }}
+                o
+              />
+              {imageLoad && <LoadingView />}
+            </TouchableOpacity>
           </Left>
           <Body>
             <Text style={{ color: isDark ? "#fff" : "#000" }}>{user.firstname + " " + user.lastname}</Text>

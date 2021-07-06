@@ -1,19 +1,15 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
-import AllPosts from '../Pages/AllPosts/AllPosts';
-import Comments from '../Pages/Comments/Comments'
-import AddPost from '../Pages/AddPost/AddPost';
-import colors from '../colors/colors';
+import AllPosts from '../../Pages/AllPosts/AllPosts';
+import Comments from '../../Pages/Comments/Comments'
+import AddPost from '../../Pages/AddPost/AddPost';
 import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { useDispatch } from "react-redux"
-import { loginUser } from '../store/actions/actions';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import colors from '../../colors/colors';
 
 
 function StackPosts({ navigation, route }) {
-    const dispatch = useDispatch()
     const Stack = createStackNavigator()
 
     React.useLayoutEffect(() => {
@@ -71,17 +67,3 @@ function StackPosts({ navigation, route }) {
 
 export default StackPosts;
 
-const styles = StyleSheet.create({
-    addButton: {
-        marginHorizontal: 10,
-        marginVertical: 5,
-        borderWidth: 1,
-        borderRadius: 5,
-        borderColor: "#fff",
-        paddingHorizontal: 8,
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center"
-    }
-})

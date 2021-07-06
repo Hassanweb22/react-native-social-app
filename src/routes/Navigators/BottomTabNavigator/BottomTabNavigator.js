@@ -2,10 +2,10 @@ import React from 'react'
 import { Platform, StyleSheet } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
-import StackPostsAll from '../../routes/StackPostsAll'
-import StackPostMy from '../../routes/StackPostMy'
-import CustomMessageStack from '../../routes/CustomMessageStack'
-import colors from '../../colors/colors';
+import StackPostsAll from '../../StackNavigators/StackPostsAll'
+import StackPostMy from '../../StackNavigators/StackPostMy'
+import CustomMessageStack from '../../StackNavigators/CustomMessageStack'
+import colors from '../../../colors/colors';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector } from 'react-redux';
 

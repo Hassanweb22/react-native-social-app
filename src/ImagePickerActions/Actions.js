@@ -1,18 +1,8 @@
-import { PermissionsAndroid, Alert, Permission, Platform } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 
 const launchImageHandler = (state, setState) => {
-    let options = {
-        title: 'Select Image',
-        customButtons: [
-            { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-        ],
-        storageOptions: {
-            skipBackup: true,
-            path: 'images',
-        },
-    };
 
     launchImageLibrary({}, response => {
         console.log('Response = ', response);
@@ -32,12 +22,6 @@ const launchImageHandler = (state, setState) => {
 
 
 const launchCameraHandler = (state, setState) => {
-    let options = {
-        storageOptions: {
-            skipBackup: true,
-            path: 'images',
-        },
-    };
     launchCamera({
         storageOptions: {
             skipBackup: true,
@@ -54,7 +38,7 @@ const launchCameraHandler = (state, setState) => {
             alert(response.customButton);
         } else {
             console.log('response', response?.assets[0]);
-            // setState({ ...state, photoCamera: response?.assets[0] })
+            setState({ ...state, photoCamera: response?.assets[0] })
             return response?.assets[0]
         }
     });

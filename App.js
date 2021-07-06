@@ -6,35 +6,30 @@ import {
   StatusBar, SafeAreaView, Platform
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, HeaderTitle } from '@react-navigation/stack';
-
-import SignIn from './src/Pages/Sigin/Sigin';
-import Signup from './src/Pages/Signup/Signup';
-import ForgetPassword from './src/Pages/ForgetPassword/ForgetPassword';
 import Auth from '@react-native-firebase/auth';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store/store';
-import MyDrawerNavigator from './src/routes/DraweNavigator';
+import MyDrawerNavigator from './src/routes/Navigators/DrawerNavigator/DraweNavigator';
 import Toast from 'react-native-toast-message';
 import colors from './src/colors/colors';
+import AuthNavigator from './src/routes/Navigators/AuthNavigator/AuthNavigator';
 
 const THEME_COLOR = colors.green;
 
 
 const App = () => {
+
   const initialState = {
     login: false,
   };
   const [state, setState] = useState(initialState);
 
-  const Stack = createStackNavigator();
 
   const unsubscribe = () => {
     Auth().onAuthStateChanged(user => {
       if (user) {
-        // console.log("userLogin", user)
         setState({ ...state, login: true });
       } else {
         setState({ ...state, login: false });
@@ -43,39 +38,9 @@ const App = () => {
   }
 
   useEffect(() => {
+    SplashScreen.hide()
     return unsubscribe()
   }, []);
-
-  function MyStackSigninNavigator() {
-    const todoState = useSelector(state => state.todo);
-
-    useEffect(() => {
-      console.log('todoState', todoState);
-      SplashScreen.hide()
-    }, []);
-
-
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          title: 'My home',
-          headerStyle: {
-            backgroundColor: 'fff',
-            opacity: 0.2,
-          },
-          headerTintColor: '#000',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          headerShown: false,
-        }}>
-        <Stack.Screen name="login" component={SignIn} />
-        <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="forget" component={ForgetPassword} />
-      </Stack.Navigator>
-    );
-  }
-
 
 
 
@@ -87,7 +52,7 @@ const App = () => {
           { backgroundColor: colors.green }]} /> : null}
           <StatusBar barStyle="light-content" backgroundColor={Platform.OS === "ios" ? "transparent" : colors.green} />
           <NavigationContainer>
-            {state.login ? <MyDrawerNavigator /> : <MyStackSigninNavigator />}
+            {state.login ? <MyDrawerNavigator /> : <AuthNavigator />}
           </NavigationContainer>
         </PersistGate>
       </Provider>

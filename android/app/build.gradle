@@ -90,8 +90,6 @@ project.ext.vectoricons = [
     iconFontNames: ["AntDesign.ttf", 'MaterialIcons.ttf', 'EvilIcons.ttf', "FontAwesome.ttf","FontAwesome5_Regular.ttf","FontAwesome5_Brands.ttf","FontAwesome5_Solid.ttf" ] // Name of the font files you want to copy
 ]
 
-
-
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -146,14 +144,14 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    signingConfigs {
+   signingConfigs {
         release {
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
                 storeFile file(MYAPP_UPLOAD_STORE_FILE)
                 storePassword MYAPP_UPLOAD_STORE_PASSWORD
                 keyAlias MYAPP_UPLOAD_KEY_ALIAS
                 keyPassword MYAPP_UPLOAD_KEY_PASSWORD
-            }
+            } 
         }
     }
     splits {
@@ -175,12 +173,12 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            signingConfig signingConfigs.release
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -204,12 +202,11 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-splash-screen')
-
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     // implementation platform('com.google.firebase:firebase-bom:28.1.0')
+
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 

@@ -1,15 +1,16 @@
 import React from 'react'
-import { StyleSheet, Text, View, StatusBar } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { Button } from 'native-base'
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import colors from '../colors/colors';
+import colors from '../../colors/colors';
 
-import HomeScreen from '../Pages/HomeScreen/HomeScreen';
-import UpdateProfile from '../Pages/UpdateProfile/UpdateProfile';
+import HomeScreen from '../../Pages/HomeScreen/HomeScreen';
+import UpdateProfile from '../../Pages/UpdateProfile/UpdateProfile';
 
 const DashboardAndProfileStack = () => {
     const Stack = createStackNavigator()
+
     return (
         <Stack.Navigator screenOptions={({ navigation, route }) => ({
             headerStyle: {
@@ -52,6 +53,5 @@ const DashboardAndProfileStack = () => {
     );
 }
 
-export default DashboardAndProfileStack
+export default DashboardAndProfileStack;
 
-const styles = StyleSheet.create({})

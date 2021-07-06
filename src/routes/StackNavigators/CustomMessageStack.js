@@ -1,13 +1,13 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { TouchableOpacity, View } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
-import Messages from "../Pages/Messages/Users"
-import Chats from "../Pages/Messages/Chats"
+import Messages from "../../Pages/Messages/Users"
+import Chats from "../../Pages/Messages/Chats"
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Thumbnail } from 'native-base';
-import colors from '../colors/colors';
+import colors from '../../colors/colors';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import LoadingView from '../components/LoadingView/LoadingView';
+import LoadingView from '../../components/LoadingView/LoadingView';
 
 
 
@@ -96,6 +96,4 @@ const CustomMessageStack = ({ navigation, route }) => {
     )
 }
 
-export default CustomMessageStack
-
-const styles = StyleSheet.create({})
+export default CustomMessageStack;
